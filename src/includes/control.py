@@ -45,14 +45,13 @@ control_patch = PortSplit({
         15 : fcb1010_control
     }),
     mpk_port_a : ChannelSplit({
-         1 : mpk_soundcraft_control,
+         1 : CakewalkController,
          8 : key_mp3_control,
         12 : mpk_vlc_control,
         13 : p_hue,
         #14 : spotify_control,
     }),
     mpk_port_b : ChannelSplit({
-         1 : CakewalkController,                # patches/cakewalk.py
          4 : pk5_mp3_control,
     }),
     q49_midi : ChannelSplit({
