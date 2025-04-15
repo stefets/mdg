@@ -180,6 +180,11 @@ player_treble = [
         SendOSC(osb_port, treble_path, 1, cursor_value_converter, "p"),
     ]
 
+# Auxiliary outputs
+ui_aux_mix = [
+        SendOSC(osb_port, mix_path, event_value_converter, cursor_value_converter, "a"),
+    ]
+
 # -----------------------------------------------------
 # Group patch by channel
 ui_standard_fx = ChannelSplit({
@@ -258,5 +263,12 @@ soundcraft_control=[
         CtrlFilter(7) >> [ui_player_mix_eq, ui_line_mix_eq],
 
         CtrlFilter(100) >> ui_master,
+        
+        CtrlFilter(101, 102, 103, 104) >> CtrlSplit({
+            101 : Ctrl(0, EVENT_VALUE),
+            102 : Ctrl(1, EVENT_VALUE),
+            103 : Ctrl(2, EVENT_VALUE),
+            104 : Ctrl(3, EVENT_VALUE),
+        }) >> [ui_aux_mix],
     ],
 ]

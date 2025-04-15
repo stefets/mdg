@@ -43,7 +43,7 @@ control_patch = PortSplit({
     }),
     mpk_port_b : ChannelSplit({
          4 : pk5_mp3_control,
-        16 : soundcraft_control,    # My Nektar Expression Pedal to control the main mix
+        16 : soundcraft_control,
     }),
     q49_midi : ChannelSplit({
          1 : q49_mp3_control,
