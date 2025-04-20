@@ -35,6 +35,10 @@ def ui_left(ev):
 def ui_right(ev):
     return event_value_converter(ev, 1)
 
+def channel_to_input(ev):
+    ''' Convert the midi channel number to the soundcraft input number '''
+    return ev.channel - 1
+
 
 # Osc Soundcraft Bridge definition
 
@@ -185,6 +189,10 @@ ui_aux_mix = [
         SendOSC(osb_port, mix_path, event_value_converter, cursor_value_converter, "a"),
     ]
 
+ui_aux_send_mix = [
+        SendOSC(osb_port, "/auxsend", channel_to_input, cursor_value_converter, 0),
+]
+
 # -----------------------------------------------------
 # Group patch by channel
 ui_standard_fx = ChannelSplit({
@@ -263,12 +271,16 @@ soundcraft_control=[
         CtrlFilter(7) >> [ui_player_mix_eq, ui_line_mix_eq],
 
         CtrlFilter(100) >> ui_master,
-        
+
         CtrlFilter(101, 102, 103, 104) >> CtrlSplit({
             101 : Ctrl(0, EVENT_VALUE),
             102 : Ctrl(1, EVENT_VALUE),
             103 : Ctrl(2, EVENT_VALUE),
             104 : Ctrl(3, EVENT_VALUE),
         }) >> [ui_aux_mix],
+        
+        CtrlFilter(105) >> CtrlSplit({
+            105 : Pass(),
+        }) >> [ui_aux_send_mix],
     ],
 ]

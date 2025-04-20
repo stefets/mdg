@@ -9,11 +9,9 @@ config(
     client_name = 'mididings',
 
     in_ports = [
-        ("q49", '.*Q49 MIDI 1.*'),
     ],
 
     out_ports = [
-        ("q49", '.*Q49 MIDI 1.*'),
     ],
 )
 
