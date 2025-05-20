@@ -50,7 +50,10 @@ _scenes = {
             ),
             Scene(
                 "CloserToTheHeart",
-                [ChannelFilter(1) >> closer_main, pk5_filter >> Transpose(-24) >> closer_base],
+                [
+                    ChannelFilter(1) >> closer_main,
+                    pk5_filter >> Transpose(-24) >> closer_base,
+                ],
             ),
             Scene(
                 "Time Stand Still",
@@ -129,9 +132,14 @@ _scenes = {
             Scene("HighlandScenery", init_patch=Discard(), patch=p_highland_scenery),
             Scene("Inwards", init_patch=Discard(), patch=p_pk5ctrl_generic >> p_base),
             Scene("AnglePark", init_patch=Discard(), patch=p_pk5ctrl_generic >> p_base),
-            Scene("Wonderland", init_patch=p_wonderland_init, patch=p_wonderland),
+            Scene("Wonderland", init_patch=Call(GT1000Patch("U09-5")), patch=Discard()),
             Scene(
                 "Harvest Home", init_patch=Call(GT1000Patch("U09-4")), patch=Discard()
+            ),
+            Scene(
+                "Restless Natives",
+                init_patch=Call(GT1000Patch("U09-3")),
+                patch=Transpose(-24) >> OctStrings,
             ),
         ],
     ),
