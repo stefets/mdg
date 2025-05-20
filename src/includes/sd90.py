@@ -36,6 +36,7 @@ EnhancedDrum=107*factor
 '''
 Variation
 '''
+Var0=0
 Var1=1
 Var2=2
 Var3=3
@@ -208,12 +209,15 @@ Jetplane=Output(sd90_port_b, channel=1, program=(Classical+Var7, 126))
 # Classical instrument part - Variation 8
 Starship=Output(sd90_port_b, channel=1, program=(Classical+Var8, 126))
 
-# Contemporary instrument part
+# Contemporary instrument part - Variation 0
 Helicpoter=Output(sd90_port_b, channel=1, program=(Contemporary, 126))
 Seashore=Output(sd90_port_b, channel=2, program=(Contemporary, 123))
 
 # Contemporary instrument part - Variation 1
 Rain=Output(sd90_port_b, channel=1, program=(Contemporary+Var1, 123))
+
+# Contemporary instrument part - Variation 2
+OctStrings=Output(sd90_port_b, channel=1, program=(Contemporary+Var2, 49))
 
 
 ### End SD-90 Patch list
