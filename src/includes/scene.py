@@ -138,8 +138,8 @@ _scenes = {
             ),
             Scene(
                 "Restless Natives",
-                init_patch=Call(GT1000Patch("U09-3")),
-                patch=Transpose(-24) >> OctStrings,
+                init_patch=restless_natives_init,
+                patch=restless_natives,
             ),
         ],
     ),
@@ -390,30 +390,6 @@ _scenes = {
             Scene("P01-3", init_patch=Call(GT1000Patch("P01-3")), patch=Discard()),
             Scene("P26-3", init_patch=Call(GT1000Patch("P26-3")), patch=Discard()),
             Scene("U47-1", init_patch=Call(GT1000Patch("U47-1")), patch=Discard()),
-        ],
-    ),
-    19: SceneGroup(
-        "ScendId19:Free",
-        [
-            Scene("Select option", init_patch=Discard(), patch=Discard()),
-        ],
-    ),
-    20: SceneGroup(
-        "SceneId20:Free",
-        [
-            Scene("Select", init_patch=Discard(), patch=Discard()),
-        ],
-    ),
-    21: SceneGroup(
-        "SceneId21:Free",
-        [
-            Scene("Select", init_patch=Discard(), patch=Discard()),
-        ],
-    ),
-    22: SceneGroup(
-        "SceneId22:Free",
-        [
-            Scene("Select", init_patch=Discard(), patch=Discard()),
         ],
     ),
 }

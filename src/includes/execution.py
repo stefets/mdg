@@ -303,5 +303,12 @@ p_transport = (pk5_filter >> [
 # Interlude patch, between two songs
 interlude = mpk_b_filter >> ChannelFilter(16) >> KeyFilter(notes=[0,49]) >> Velocity(fixed=50) >> LatchNotes(reset=0) >> [Oxigenizer]
 
+# Restless Natives
+restless_natives_init = Call(GT1000Patch("U09-3"))
+restless_natives = [
+    (KeyFilter('d3') >> LatchNotes(True, reset='c3') >>  Harmonize('d', 'major', ['unison', 'octave'])),
+    (KeyFilter(notes=['f3', 'e3']))
+] >> Transpose(-24) >> Velocity(fixed=100) >> Itopia
+
 # Glissando
 p_glissando=(Filter(NOTEON) >> Call(glissando, 48, 84, 100, 0.01, -1, sd90_port_a))
