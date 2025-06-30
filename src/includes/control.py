@@ -39,7 +39,9 @@ control_patch = PortSplit({
         13 : p_hue,
         #14 : spotify_control,
     }),
-    mpk_port_b : soundcraft_control,
+    mpk_port_b : ChannelSplit({
+         1 : Program(sd90_port_a, EVENT_CHANNEL, EVENT_VALUE),
+    }),
     sd90_midi_1 : Pass(),
     sd90_midi_2 : Pass(),
     behringer   : Pass(),

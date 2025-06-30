@@ -125,7 +125,7 @@ _scenes = {
         [
             Scene(
                 "BassCover",
-                init_patch=MPG123_PLAYLIST // Call(GT1000Patch("U09-1")),
+                init_patch=MPG123_PLAYLIST // Call(GT1000Patch("U47-1")),
                 patch=Discard(),
             ),
             Scene("InBigCountry", init_patch=i_big_country, patch=p_big_country),

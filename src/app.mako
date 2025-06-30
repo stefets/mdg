@@ -108,7 +108,7 @@ hook(
 % endfor
 
 # PROD
-pre  = ~Filter(SYSRT_CLOCK) >> ~ChannelFilter(8, 9, 11) 
+pre  = ~Filter(SYSRT_CLOCK) >> ~ChannelFilter(8, 9, 11, 13) 
 post = Pass()
 
 # DEBUG
