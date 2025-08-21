@@ -9,10 +9,8 @@ from extensions.httpclient import HttpGet
 
 config(
      in_ports=[
-         ('Q49', '28:0'),
      ],
      out_ports=[
-        ('Q49', '28:0'),
      ],
 )
 

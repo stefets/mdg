@@ -39,7 +39,7 @@ p_base = [
     # p_hd500_filter_base, 
 ]
 
-p_pk5ctrl_generic = pk5 >> Filter(NOTEON)
+p_pk5ctrl_generic = pk5_filter >> Filter(NOTEON)
 
 # 
 
@@ -61,7 +61,7 @@ keysynth =  Velocity(fixed=80) >> Output(sd90_port_a, channel=3, program=(Classi
 # Patches for Marathon by Rush
 
 # Accept (B4, B3) and E4 => transformed to a chord 
-marathon_intro=(mpk_a
+marathon_intro=(mpk_a_filter
 >>LatchNotes(False,reset='c5') >> Velocity(fixed=110) >>
 	( 
 		(KeyFilter('e4') >> Harmonize('e','major',['unison', 'fifth'])) //
@@ -69,7 +69,7 @@ marathon_intro=(mpk_a
 	) >> Output(sd90_port_a, channel=3, program=(Classical,51), volume=110, ctrls={93:75, 91:75}))
 
 # Note : ChannelFilter 2 - Enable PK5 message only
-marathon_chords=(pk5 >> LatchNotes(False, reset='c4') >> Velocity(fixed=80) >>
+marathon_chords=(pk5_filter >> LatchNotes(False, reset='c4') >> Velocity(fixed=80) >>
 	(
 
 		# From first to last...
@@ -87,7 +87,7 @@ marathon_chords=(pk5 >> LatchNotes(False, reset='c4') >> Velocity(fixed=80) >>
 
 	) >> Transpose(-24) >> Output(sd90_port_a, channel=4, program=(Classical+Var1,51), volume=100, ctrls={93:75, 91:75}))
 
-marathon_bridge=(mpk_a
+marathon_bridge=(mpk_a_filter
  >>
 	(
 		(KeyFilter('c2') >> Key('b2') >> Harmonize('b','minor',['unison', 'third', 'fifth'])) //
@@ -96,7 +96,7 @@ marathon_bridge=(mpk_a
 	) >> Velocity(fixed=75) >> Output(sd90_port_a, channel=3, program=(Classical,51), volume=110, ctrls={93:75, 91:75}))
 
 # Solo bridge, lower -12
-marathon_bridge_lower=(mpk_a
+marathon_bridge_lower=(mpk_a_filter
  >>
 	(
 		(KeyFilter('c1') >> Key('b1') >> Harmonize('b','minor',['unison', 'third', 'fifth'])) //
@@ -105,7 +105,7 @@ marathon_bridge_lower=(mpk_a
 	) >> Velocity(fixed=90) >>  Output(sd90_port_a, channel=4, program=(Classical,51), volume=75, ctrls={93:75, 91:75}))
 
 # You can take the most
-marathon_cascade=(mpk_a
+marathon_cascade=(mpk_a_filter
  >> KeyFilter('f3:c#5') >> Transpose(12) >> Velocity(fixed=50) >> Output(sd90_port_b, channel=11, program=(Enhanced,99), volume=80))
 
 marathon_bridge_split= KeySplit('f3', marathon_bridge_lower, marathon_cascade)
@@ -263,7 +263,7 @@ p_rush_trees=(pk5_filter >>
 
 # Muse Band
 p_muse = p_pk5ctrl_generic >> p_base
-p_muse_stockholm = pk5 >> [
+p_muse_stockholm = pk5_filter >> [
     KeyFilter(notes=[60]) >> [
         Key('d2') >> Harmonize('d', 'major', ['unison', 'octave']),
         HueDemon
@@ -293,7 +293,7 @@ p_wonderland_rec = p_pk5ctrl_generic >> [
 
 # ---
 # Daw + Hue helper for recording
-p_transport = (pk5 >> [
+p_transport = (pk5_filter >> [
             p_hue_live,
             Filter(NOTEON)  >> KeyFilter(notes=[60])    >> [CakePlay],
             Filter(NOTEON)  >> KeyFilter(notes=[62])    >> [CakeRecord],
@@ -301,7 +301,14 @@ p_transport = (pk5 >> [
         ])
 
 # Interlude patch, between two songs
-interlude = mpk_b >> ChannelFilter(16) >> KeyFilter(notes=[0,49]) >> Velocity(fixed=50) >> LatchNotes(reset=0) >> [Oxigenizer]
+interlude = mpk_b_filter >> ChannelFilter(16) >> KeyFilter(notes=[0,49]) >> Velocity(fixed=50) >> LatchNotes(reset=0) >> [Oxigenizer]
+
+# Restless Natives
+restless_natives_init = Call(GT1000Patch("U09-3"))
+restless_natives = [
+    (KeyFilter('d3') >> LatchNotes(True, reset='c3') >>  Harmonize('d', 'major', ['unison', 'octave'])),
+    (KeyFilter(notes=['f3', 'e3']))
+] >> Transpose(-24) >> Velocity(fixed=100) >> Itopia
 
 # Glissando
 p_glissando=(Filter(NOTEON) >> Call(glissando, 48, 84, 100, 0.01, -1, sd90_port_a))
