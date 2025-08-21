@@ -39,7 +39,7 @@ Creates a mididings script from a configuration file (src/config.json) and Mako 
 # mididings ressources
 * https://github.com/mididings/mididings (maintained)
 * https://groups.google.com/g/mididings  (mailing list)
-# Flaskdings API
+# Stagedings API
 ### I maintain an API for mididings, an alternative of the livedings UI. 
-##### It's a HTML5 frontend, it supports multiple clients and a Rest API, made with Flask and Flask SocketIO
-* https://github.com/stefets/flaskdings
+##### It's a HTML5 frontend, it supports multiple clients and a Rest API, made with FastAPI
+* https://github.com/stefets/stagedings
