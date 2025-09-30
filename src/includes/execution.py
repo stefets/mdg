@@ -216,11 +216,6 @@ i_rush =  Pass()
 # Default patch - tout en paralelle mais séparé par contexte
 p_rush = Pass()
 
-# Subdivisions
-
-# Init patch
-i_rush_sub =  Pass()
-
 # Grand Designs
 
 # Init patch
@@ -231,11 +226,6 @@ p_rush_gd =  Pass()
 
 # Youtube SoundCraftBridge Demo
 p_rush_gd_demo = Pass()
-
-# The Trees
-
-# Init patch
-i_rush_trees =  Pass()
 
 # Foot keyboard output
 p_rush_trees_foot = Velocity(fixed=110) >> Output(sd90_port_a, channel=1, program=(Classical,51), volume=110, ctrls={93:75, 91:75})

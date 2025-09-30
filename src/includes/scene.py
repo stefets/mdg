@@ -12,13 +12,13 @@ _scenes = {
             Scene("Generic", init_patch=MPG123_PLAYLIST, patch=Discard() // p_rush),
             Scene(
                 "Subdivisions",
-                init_patch=i_rush_sub // MPG123_PLAYLIST,
-                patch=Discard() // p_rush,
+                init_patch=[Call(GT1000Patch("U10-2")), MPG123_PLAYLIST],
+                patch=Discard(),
             ),
             Scene(
                 "TheTrees",
-                init_patch=i_rush_trees // MPG123_PLAYLIST,
-                patch=Discard() // p_rush_trees,
+                init_patch=MPG123_PLAYLIST,
+                patch=p_rush_trees,
             ),
             Scene("Grand Designs", init_patch=i_rush_gd, patch=Discard() // p_rush_gd),
             Scene("Marathon", init_patch=i_rush, patch=Discard()),
