@@ -22,7 +22,7 @@ Creates a mididings script from a configuration file (src/config.json) and Mako 
       * VLC Server - Send HTTP requests to a VLC server
       * AKAI MIDIMIX - Helper to manage the switch state and the LED of the Akai MIDIMIX
 # Dependencies
-* mididings, pyliblo, pyinotify
+* mididings, pyliblo3, pyinotify
 * vlc and python-vlc-http
 * mpg123 and mpyg321
 * python-dotenv
