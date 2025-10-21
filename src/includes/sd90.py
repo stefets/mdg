@@ -176,6 +176,7 @@ Applause=Output(sd90_port_b, channel=8, program=(Classical, 127))
 
 # Classical instrument part - Variation 1
 Itopia=Output(sd90_port_b, channel=1, program=(Classical+Var1, 92))
+Goblin=Output(sd90_port_b, channel=1, program=(Classical+Var1, 102))
 Kalimba=Output(sd90_port_b, channel=1, program=(Classical+Var1, 109))
 BagPipe=Output(sd90_port_b, channel=1, program=(Classical+Var1, 110))
 Dog=Output(sd90_port_b, channel=14, program=(Classical+Var1, 124))
