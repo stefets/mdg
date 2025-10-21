@@ -24,7 +24,7 @@ Creates a mididings script from a configuration file (src/config.json) and Mako 
 # Dependencies
 * mididings, pyliblo3, pyinotify
 * vlc and python-vlc-http
-* mpg123 and mpyg321
+* mpg123 (recommended) or mpyg321 (not recommended)
 * python-dotenv
 * pyalsaaudio
 * colorama
