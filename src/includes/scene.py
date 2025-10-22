@@ -20,7 +20,7 @@ _scenes = {
                 init_patch=MPG123_PLAYLIST,
                 patch=p_rush_trees,
             ),
-            Scene("Grand Designs", init_patch=i_rush_gd, patch=Discard() // p_rush_gd),
+            Scene("Grand Designs", init_patch=Call(GT1000Patch("U10-1")), patch=Discard()),
             Scene("Marathon", init_patch=i_rush, patch=Discard()),
             Scene("YYZ", init_patch=i_rush // MPG123_PLAYLIST, patch=p_rush),
             Scene("Limelight", init_patch=i_rush // MPG123_PLAYLIST, patch=p_rush),
