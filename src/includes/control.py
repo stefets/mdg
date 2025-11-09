@@ -13,9 +13,9 @@ mpg123_controller_1 = transport_filter >> MPG123_SD90_A
 mpg123_controller_2 = transport_filter >> MPG123_SD90_B
 vlc_controller_1 = trigger_filter >> VLC_BASE
 
-sd90_controller = [ 
-    CtrlFilter(0) >> Ctrl(EVENT_CTRL, EVENT_VALUE) >> WaveLevel,
-    CtrlFilter(1) >> Ctrl(EVENT_CTRL, EVENT_VALUE) >> InstLevel,
+sd90_controller = Port(sd90_port_a) >> [ 
+    CtrlFilter(0) >> WaveLevel,
+    CtrlFilter(1) >> InstLevel,
  ]
 
 # Spotify

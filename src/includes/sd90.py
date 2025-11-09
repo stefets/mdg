@@ -244,10 +244,10 @@ AfxOff = SysEx(sd90_port_a, "f0,41,10,00,48,12,02,10,11,43,00,1a,f7")
 # Audio Mixer
 MixToAfx = SysEx(sd90_port_a, "f0,41,10,00,48,12,02,10,10,00,06,58,f7")
 
-# Audio Level Control - CC#7 is mandatory for SD-90 volume control
-WaveLevel  = Port(sd90_port_a) >> CtrlToSysEx(7, "f0,41,10,00,48,12,02,10,11,20,00,3f,f7", 10, 6)
-InstLevel  = Port(sd90_port_a) >> CtrlToSysEx(7, "f0,41,10,00,48,12,02,10,11,30,00,3f,f7", 10, 6)
-MicGtLevel = Port(sd90_port_a) >> CtrlToSysEx(7, "f0,41,10,00,48,12,02,10,11,00,00,3f,f7", 10, 6)
+# Audio Level Control
+WaveLevel  = CtrlToSysEx(0, "f0,41,10,00,48,12,02,10,11,20,00,3f,f7", 10, 6)
+InstLevel  = CtrlToSysEx(1, "f0,41,10,00,48,12,02,10,11,30,00,3f,f7", 10, 6)
+MicGtLevel = CtrlToSysEx(2, "f0,41,10,00,48,12,02,10,11,00,00,3f,f7", 10, 6)
 
 # SD-90 Bank Patch
 SP1  =   SysEx(sd90_port_a, "f0,41,10,00,48,12,10,00,20,04,50,00,00,7c,f7")
