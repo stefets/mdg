@@ -227,9 +227,17 @@ OctStrings=Output(sd90_port_b, channel=1, program=(Contemporary+Var2, 49))
 
 Reset = SysEx(sd90_port_a, "f0,41,10,00,48,12,00,00,00,00,00,00,f7")
 
-
 # Audio FX
+SpaceMulti = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 10, 3e, f7")
+GuitarMulti = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 20, 2e, f7")
+VocalBassMulti = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 30, 1e, f7")
+GrooveMulti = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 40, 0e, f7")
+Isolator = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 48, 06, f7")
+CenterCanceler = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 50, 7e, f7")
+LoFiProcessor = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 60, 6e, f7")
+SurroundRV = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 70, 5e, f7")
 MasteringEffect = SysEx(sd90_port_a,"f0,41,10,00,48,12,02,10,20,00,78,56,f7")
+
 AfxOn  = SysEx(sd90_port_a, "f0,41,10,00,48,12,02,10,11,43,01,19,f7")
 AfxOff = SysEx(sd90_port_a, "f0,41,10,00,48,12,02,10,11,43,00,1a,f7")
 
@@ -237,9 +245,9 @@ AfxOff = SysEx(sd90_port_a, "f0,41,10,00,48,12,02,10,11,43,00,1a,f7")
 MixToAfx = SysEx(sd90_port_a, "f0,41,10,00,48,12,02,10,10,00,06,58,f7")
 
 # Audio Level Control
-WaveLevel  = Port(sd90_port_a) >> CtrlToSysEx(7, "f0,41,10,00,48,12,02,10,11,20,00,3f,f7", 10, 6)
-InstLevel  = Port(sd90_port_a) >> CtrlToSysEx(7, "f0,41,10,00,48,12,02,10,11,30,00,3f,f7", 10, 6)
-MicGtLevel = Port(sd90_port_a) >> CtrlToSysEx(7, "f0,41,10,00,48,12,02,10,11,00,00,3f,f7", 10, 6)
+WaveLevel  = CtrlToSysEx(0, "f0,41,10,00,48,12,02,10,11,20,00,3f,f7", 10, 6)
+InstLevel  = CtrlToSysEx(1, "f0,41,10,00,48,12,02,10,11,30,00,3f,f7", 10, 6)
+MicGtLevel = CtrlToSysEx(2, "f0,41,10,00,48,12,02,10,11,00,00,3f,f7", 10, 6)
 
 # SD-90 Bank Patch
 SP1  =   SysEx(sd90_port_a, "f0,41,10,00,48,12,10,00,20,04,50,00,00,7c,f7")
