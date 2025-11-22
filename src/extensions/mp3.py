@@ -41,10 +41,10 @@ class Mp3Player():
 
         self.enable = True
 
-        self.wrapper = MPyg123Player("mpg123", card if card else None, True)
+        self.mp3_player = MPyg123Player("mpg123", card if card else None, True)
 
         # For mpg123 >= v1.3*.*
-        self.wrapper.mpg_outs.append(
+        self.mp3_player.mpg_outs.append(
             {
                 "mpg_code": "@P 3",
                 "action": "end_of_song",
@@ -101,16 +101,16 @@ class Mp3Player():
         self.current_entry = 0
 
         self.vol = config["default_volume"]  # In %
-        self.wrapper.volume(self.vol)
+        self.mp3_player.volume(self.vol)
 
         self.current_scene = -1
         self.current_subscene = -1
 
         # Events subscriptions
-        self.wrapper.subscribe_event(MPyg321Events.ERROR, self.handle_error)
-        self.wrapper.subscribe_event(MPyg321Events.USER_PAUSE, self.handle_pause)
-        self.wrapper.subscribe_event(MPyg321Events.ANY_STOP, self.handle_any_stop)
-        self.wrapper.subscribe_event(MPyg321Events.MUSIC_END, self.handle_music_end)
+        self.mp3_player.subscribe_event(MPyg321Events.ERROR, self.handle_error)
+        self.mp3_player.subscribe_event(MPyg321Events.USER_PAUSE, self.handle_pause)
+        self.mp3_player.subscribe_event(MPyg321Events.ANY_STOP, self.handle_any_stop)
+        self.mp3_player.subscribe_event(MPyg321Events.MUSIC_END, self.handle_music_end)
 
     # Event handlers        
     def handle_error(self, context):
@@ -118,8 +118,8 @@ class Mp3Player():
         print(f"MP3: An error occurs : {context.error_type} / {context.error_message}")
 
     def handle_any_stop(self, context):
-        if self.wrapper.status != PlayerStatus.PAUSED:
-            self.wrapper.status = PlayerStatus.STOPPED
+        if self.mp3_player.status != PlayerStatus.PAUSED:
+            self.mp3_player.status = PlayerStatus.STOPPED
 
     def handle_pause(self, context):
         pass
@@ -209,23 +209,23 @@ class Mp3Player():
         ):
             """The context has externally been changed"""
             """ Refresh the playlist according the current scene/subscene """
-            self.wrapper.pause()
+            self.mp3_player.pause()
             self.current_scene = current_scene()
             self.current_subscene = current_subscene()
             self.playlist.load_from_file()
         if ev.data1 > self.playlist.len():
             return
-        self.wrapper.load_list(ev.data1, self.playlist.filename)
+        self.mp3_player.load_list(ev.data1, self.playlist.filename)
         self.current_entry = ev.data1
         self.update_display()
 
     def on_toggle_pause(self, ev):
         """Pause if playing, else resume if paused"""
-        self.wrapper.toggle_pause()
+        self.mp3_player.toggle_pause()
 
     def on_toggle_mute(self, ev):
         """Mute or UnMute if playing"""
-        self.wrapper.toggle_mute()
+        self.mp3_player.toggle_mute()
 
     def forward(self, ev):
         self.on_jump("+")
@@ -235,7 +235,7 @@ class Mp3Player():
 
     def on_jump(self, direction):
         value = "{}{} s".format(direction, self.jump_offset)
-        self.wrapper.jump(value)
+        self.mp3_player.jump(value)
 
     def next_entry(self, ev):
         if self.playlist.len() >= self.current_entry + 1:
@@ -251,7 +251,7 @@ class Mp3Player():
         if ev.data2 % 5 != 0:
             return
         self.vol = ev.data2
-        self.wrapper.volume(self.vol)
+        self.mp3_player.volume(self.vol)
         self.update_display()
 
     def set_offset(self, ev):
@@ -286,7 +286,7 @@ class Mp3Player():
 
     def on_replay(self, ev):
         if self.current_entry > 0:
-            self.wrapper.load_list(self.current_entry, self.playlist.filename)
+            self.mp3_player.load_list(self.current_entry, self.playlist.filename)
 
 class Playlist:
     def __init__(self):
