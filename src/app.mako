@@ -36,7 +36,7 @@ from extensions.philips import *
 from extensions.spotify import *
 from extensions.midimix import *
 from extensions.httpclient import *
-from extensions.gt1000 import GT1000Patch
+from extensions.gt1000 import GT1KPreset
 
 # Port name alias
 midimix_midi = "midimix"

@@ -1,13 +1,13 @@
 import re
 from typing import Any
 from mididings.engine import output_event
-from mididings.event import ProgramEvent, CtrlEvent
+from mididings.event import ProgramEvent, CtrlEvent, SysExEvent
 
 target_port = "mpk_midi"    # The output port where the MIDI messages will be sent connected to the MIDI IN of the GT1000
 target_channel = 9          # The listen channel configured in the GT1000 
 
-class GT1000Patch():
-    '''A callable object that send a Patch Change by name to a GT-1000 
+class GT1KPreset():
+    '''A callable object that activate a preset by name.
     Usage : Call(GT1000Patch("U09-3"))
     Logic:
         Bank 1 (User U01-U25) → 1 to 125

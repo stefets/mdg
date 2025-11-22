@@ -12,7 +12,7 @@ _scenes = {
             Scene("Generic", init_patch=MPG123_PLAYLIST, patch=Discard() // p_rush),
             Scene(
                 "Subdivisions",
-                init_patch=[Call(GT1000Patch("U10-2")), MPG123_PLAYLIST],
+                init_patch=[Call(GT1KPreset("U10-2")), MPG123_PLAYLIST],
                 patch=Discard(),
             ),
             Scene(
@@ -20,7 +20,7 @@ _scenes = {
                 init_patch=MPG123_PLAYLIST,
                 patch=p_rush_trees,
             ),
-            Scene("Grand Designs", init_patch=Call(GT1000Patch("U10-1")), patch=Discard()),
+            Scene("Grand Designs", init_patch=Call(GT1KPreset("U10-1")), patch=Discard()),
             Scene("Marathon", init_patch=i_rush, patch=Discard()),
             Scene("YYZ", init_patch=i_rush // MPG123_PLAYLIST, patch=p_rush),
             Scene("Limelight", init_patch=i_rush // MPG123_PLAYLIST, patch=p_rush),
@@ -125,16 +125,16 @@ _scenes = {
         [
             Scene(
                 "BassCover",
-                init_patch=MPG123_PLAYLIST // Call(GT1000Patch("U47-1")),
+                init_patch=MPG123_PLAYLIST // Call(GT1KPreset("U47-1")),
                 patch=Discard(),
             ),
             Scene("InBigCountry", init_patch=i_big_country, patch=p_big_country),
             Scene("HighlandScenery", init_patch=Discard(), patch=p_highland_scenery),
             Scene("Inwards", init_patch=Discard(), patch=p_pk5ctrl_generic >> p_base),
             Scene("AnglePark", init_patch=Discard(), patch=p_pk5ctrl_generic >> p_base),
-            Scene("Wonderland", init_patch=Call(GT1000Patch("U09-5")), patch=Discard()),
+            Scene("Wonderland", init_patch=Call(GT1KPreset("U09-5")), patch=Discard()),
             Scene(
-                "Harvest Home", init_patch=Call(GT1000Patch("U09-4")), patch=Discard()
+                "Harvest Home", init_patch=Call(GT1KPreset("U09-4")), patch=Discard()
             ),
             Scene(
                 "Restless Natives",
@@ -385,11 +385,11 @@ _scenes = {
     18: SceneGroup(
         "GT-1000",
         [
-            Scene("U01-1", init_patch=Call(GT1000Patch("U01-1")), patch=Discard()),
-            Scene("U09-3", init_patch=Call(GT1000Patch("U09-3")), patch=Discard()),
-            Scene("P01-3", init_patch=Call(GT1000Patch("P01-3")), patch=Discard()),
-            Scene("P26-3", init_patch=Call(GT1000Patch("P26-3")), patch=Discard()),
-            Scene("U47-1", init_patch=Call(GT1000Patch("U47-1")), patch=Discard()),
+            Scene("U01-1", init_patch=Call(GT1KPreset("U01-1")), patch=Discard()),
+            Scene("U09-3", init_patch=Call(GT1KPreset("U09-3")), patch=Discard()),
+            Scene("P01-3", init_patch=Call(GT1KPreset("P01-3")), patch=Discard()),
+            Scene("P26-3", init_patch=Call(GT1KPreset("P26-3")), patch=Discard()),
+            Scene("U47-1", init_patch=Call(GT1KPreset("U47-1")), patch=Discard()),
         ],
     ),
 }

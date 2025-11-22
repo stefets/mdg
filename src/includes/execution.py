@@ -294,7 +294,7 @@ p_transport = (pk5_filter >> [
 interlude = mpk_b_filter >> ChannelFilter(16) >> KeyFilter(notes=[0,49]) >> Velocity(fixed=50) >> LatchNotes(reset=0) >> [Oxigenizer]
 
 # Restless Natives
-restless_natives_init = Call(GT1000Patch("U09-3"))
+restless_natives_init = Call(GT1KPreset("U09-3"))
 restless_natives = [
     (KeyFilter('d3') >> LatchNotes(True, reset='c3') >>  Harmonize('d', 'major', ['unison', 'octave'])),
     (KeyFilter(notes=['f3', 'e3']))
