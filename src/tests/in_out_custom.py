@@ -38,6 +38,7 @@ rt_midi      = "rt_midi"
 
 gt1000_midi_1 = "gt1000_midi_1"
 gt1000_midi_2 = "gt1000_midi_2"
+numark_midi   = "numark_midi"
 
 config(
     initial_scene = 1,
@@ -58,7 +59,8 @@ config(
         #(virtual,      '.*VirMIDI 31-0.*',),
         #(rt_midi,      '.*RtMidi output.*',),
         (gt1000_midi_1,'.*GT-1000 MIDI 1.*',),
-        (gt1000_midi_2,'.*GT-1000 MIDI 2.*',),        
+        (gt1000_midi_2,'.*GT-1000 MIDI 2.*',),
+        (numark_midi,  '.*Party Mix MKII MIDI 1.*',),
     ],
 
     in_ports = [
@@ -75,7 +77,8 @@ config(
         #(virtual,      '.*VirMIDI 31-0.*',),
         #(rt_midi,      '.*RtMidi output.*',),
         (gt1000_midi_1,'.*GT-1000 MIDI 1.*',),
-        (gt1000_midi_2,'.*GT-1000 MIDI 2.*',),        
+        (gt1000_midi_2,'.*GT-1000 MIDI 2.*',),
+        (numark_midi,  '.*Party Mix MKII MIDI 1.*',),
     ],
 )
 
