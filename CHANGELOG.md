@@ -1,3 +1,21 @@
+## [unreleased]
+
+### 🚀 Features
+
+- Add MIDI support for Numark Party Mix MKII and Mixxx
+
+### 🚜 Refactor
+
+- Rename GT1000Patch to GT1KPreset and update references
+- *(mp3)* Rename wrapper to mp3_player for clarity and update references
+
+### 📚 Documentation
+
+- Add initial CHANGELOG.md
+
+### 🧪 Testing
+
+- Add Party Mix MKII
 ## [0.0.1] - 2025-11-10
 
 ### 🚀 Features
