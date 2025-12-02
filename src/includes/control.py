@@ -47,10 +47,15 @@ control_patch = PortSplit({
     }),
     mpk_port_b : ChannelSplit({
          1 : Program(sd90_port_a, EVENT_CHANNEL, EVENT_VALUE),
+         2 : Channel(1) >> Port(mixxx_midi_0),
          8 : mpg123_controller_1,
          4 : mpg123_controller_2,
     }),
+
     sd90_midi_1 : Pass(),
     sd90_midi_2 : Pass(),
     behringer   : Pass(),
+    
+    # Direct routing of the Numark to the virtual port used by Mixxx
+    numark_midi_0 : Port(mixxx_midi_0)  
 })
