@@ -141,6 +141,8 @@ _scenes = {
                 init_patch=restless_natives_init,
                 patch=restless_natives,
             ),
+            Scene("Fields of fire (bass)", init_patch=Call(GT1KPreset("U47-5")), patch=Discard()),
+            Scene("Fields of fire (guit)", init_patch=Call(GT1KPreset("U09-2")), patch=Discard()),
         ],
     ),
     6: SceneGroup(
