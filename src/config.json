@@ -1,17 +1,20 @@
 {
-    "template": "app.mako",
+    "template": "main.mako",
     "includes": [
-        "includes/functions.py",
-        "includes/filters.py",
-        "includes/sd90.py",
-        "includes/gt1000.py",
-        "includes/soundcraft.py",
-        "includes/hue.py",
-        "includes/cakewalk.py",
-        "includes/execution.py",
-        "includes/extensions.py",
-        "includes/control.py",
-        "includes/scene.py"
+        "includes/functions/config.py",
+        "includes/functions/hook.py",
+        "includes/helpers/common.py",
+        "includes/patches/filters.py",
+        "includes/patches/sd90.py",
+        "includes/patches/gt1000.py",
+        "includes/patches/soundcraft.py",
+        "includes/patches/hue.py",
+        "includes/patches/cakewalk.py",
+        "includes/patches/execution.py",
+        "includes/patches/extensions.py",
+        "includes/scenes/main.py",
+        "includes/controls/main.py",
+        "includes/functions/run.py"
     ],
     "alsa": {
         "template": "asoundrc.mako",

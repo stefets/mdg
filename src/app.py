@@ -8,7 +8,7 @@ import alsaaudio
 from mako.template import Template
 
 
-def make_asoundrc(config) -> None:
+def render_asoundrc(config) -> None:
     audio_devices = config["asoundrc"]
     asoundrc = Template(filename=config["template"])
     for device_number, card_name in enumerate(alsaaudio.cards()):
@@ -16,20 +16,21 @@ def make_asoundrc(config) -> None:
     with open(os.path.expanduser('~') + "/.asoundrc", "w") as FILE:
         FILE.write(asoundrc.render(**audio_devices))
 
-def make_script(config, scene=None) -> str:
+
+def render_script(config, template=None) -> str:
     # Generates the mididings script code
     return Template(filename=config["template"]).render(
         includes = config["includes"]
     )
 
-def main(scene=None):
+def render(config, template) -> str:
+    render_asoundrc(config["alsa"])
+    return render_script(config, template)
+
+def main(stemplate=None):
     with open('config.json') as FILE:
         config = json.load(FILE)
-
-    make_asoundrc(config["alsa"])
-    src = make_script(config, scene)
-
-    print(src)
+    print(render(config, stemplate))
 
 
 '''

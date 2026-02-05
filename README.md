@@ -1,11 +1,11 @@
-# live-config is a mididings script builder
+# mdg is tool to build a mididings script
 Creates a mididings script from a configuration file (src/config.json) and Mako templates
 
 # How it works
 * Use the mididings community version.
 * app.mako is the template of the script
 * asoundrc.mako is the template for audio device
-  * Because ALSA ports assignation for PCM is dynamic the script script builder take care of this:
+  * Because ALSA ports assignation for PCM is dynamic the builder take care of this:
     * Configure an ~/.asoundrc for audio devices with the help of pyalsaaudio
 * Entry point is /src/app.py and loads the configuration file
   * Then, it render to stdout a mididings script by replacing tokens in all Mako templates
@@ -33,13 +33,5 @@ Creates a mididings script from a configuration file (src/config.json) and Mako 
 * Mako
 * phue
 * argh
-# Installing mididings
-* Check the pages on how I install mididings
-* https://github.com/stefets/live-config/wiki
-# mididings ressources
+# mididings
 * https://github.com/mididings/mididings (maintained)
-* https://groups.google.com/g/mididings  (mailing list)
-# Stagedings API
-### I maintain an API for mididings, an alternative of the livedings UI. 
-##### It's a HTML5 frontend, it supports multiple clients and a Rest API, made with FastAPI
-* https://github.com/stefets/stagedings
