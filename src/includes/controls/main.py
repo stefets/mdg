@@ -16,6 +16,10 @@ vlc_controller_1 = trigger_filter >> VLC_BASE
 sd90_controller = Port(sd90_port_a) >> [ 
     CtrlFilter(0) >> WaveLevel,
     CtrlFilter(1) >> InstLevel,
+    CtrlFilter(2) >> MicGtLevel,
+    CtrlFilter(3) >> DigiLevel,
+    CtrlFilter(4) >> MasterLevel,
+    CtrlFilter(5) >> RecLevel,
  ]
 
 # Spotify
