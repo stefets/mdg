@@ -2,11 +2,10 @@
 #-*- coding: utf-8 -*-
 
 '''
-Thanks to the programmer Dominic Sacre for that unbeatable MIDI engine - a true masterpiece
+Thanks to the programmer Dominic Sacré for that unbeatable MIDI engine - a true masterpiece
 
 https://github.com/mididings/mididings (Community version! My prayers have been answered)
 
-(DEPRECATED VERSION) https://github.com/dsacre/mididings (Sadly, abandonned since 2015)
 '''
 
 import os
@@ -36,12 +35,11 @@ from extensions.philips import *
 from extensions.spotify import *
 from extensions.midimix import *
 from extensions.httpclient import *
-from extensions.gt1000 import GT1000Patch
+from extensions.gt1000 import GT1KPreset
 
-# Port name alias
+
+        
 midimix_midi = "midimix"
-
-q49_midi     = "q49_midi"
 
 behringer    = "behringer"
 
@@ -57,7 +55,9 @@ mpk_remote   = "mpk_remote"
 
 gt1000_midi_1 = "gt1000_midi_1"
 gt1000_midi_2 = "gt1000_midi_2"
- 
+numark_midi_0 = "numark_midi_0"
+mixxx_midi_0  = "mixxx_midi_0"
+
 config(
 
     initial_scene = 1,
@@ -71,13 +71,14 @@ config(
         (sd90_midi_1,  '.*SD-90 MIDI 1.*',),
         (sd90_midi_2,  '.*SD-90 MIDI 2.*',),
         (behringer,    '.*UMC204HD 192k MIDI 1.*'),
-        (q49_midi,     '.*Q49 MIDI 1.*',),
         (mpk_port_a,   '.*MPK249 Port A.*',),
         (mpk_port_b,   '.*MPK249 Port B.*',),
         (mpk_midi,     '.*MPK249 MIDI.*',),
         (mpk_remote,   '.*MPK249 Remote.*',),
         (gt1000_midi_1,'.*GT-1000 MIDI 1.*',),
         (gt1000_midi_2,'.*GT-1000 MIDI 2.*',),
+        (mixxx_midi_0,'.*VirMIDI.*-0$',),
+        (numark_midi_0,'.*Party Mix MKII MIDI 1.*',),
     ],
 
     in_ports = [
@@ -87,24 +88,21 @@ config(
         (sd90_midi_1,  '.*SD-90 MIDI 1.*',),
         (sd90_midi_2,  '.*SD-90 MIDI 2.*',),
         (behringer,    '.*UMC204HD 192k MIDI 1.*'),
-        (q49_midi,     '.*Q49 MIDI 1.*',),
         (mpk_port_a,   '.*MPK249 Port A.*',),
         (mpk_port_b,   '.*MPK249 Port B.*',),
         (mpk_midi,     '.*MPK249 MIDI.*',),
         (mpk_remote,   '.*MPK249 Remote.*',),
         (gt1000_midi_1,'.*GT-1000 MIDI 1.*',),
-        (gt1000_midi_2,'.*GT-1000 MIDI 2.*',),        
+        (gt1000_midi_2,'.*GT-1000 MIDI 2.*',),
+        (mixxx_midi_0,'.*VirMIDI.*-0$',),
+        (numark_midi_0,'.*Party Mix MKII MIDI 1.*',),
     ],
-
 )
-
+        
 hook(
-    AutoRestart(),
     OSCInterface(),
     MemorizeScene(".hook.memorize_scene")
 )
-
-# Load includes files inplace
         # --------------------------------------------------------------------
 # Helper functions available for patches and controllers
 # --------------------------------------------------------------------
@@ -195,7 +193,6 @@ def OnDebug(ev):
 mpk_a_filter = PortFilter(mpk_port_a)
 mpk_b_filter = PortFilter(mpk_port_b)
 pk5_filter   = PortFilter(mpk_midi) >> ChannelFilter(3)
-q49_filter   = PortFilter(q49_midi)
 
 # -------------------------------
 
@@ -237,6 +234,7 @@ EnhancedDrum=107*factor
 '''
 Variation
 '''
+Var0=0
 Var1=1
 Var2=2
 Var3=3
@@ -376,6 +374,7 @@ Applause=Output(sd90_port_b, channel=8, program=(Classical, 127))
 
 # Classical instrument part - Variation 1
 Itopia=Output(sd90_port_b, channel=1, program=(Classical+Var1, 92))
+Goblin=Output(sd90_port_b, channel=1, program=(Classical+Var1, 102))
 Kalimba=Output(sd90_port_b, channel=1, program=(Classical+Var1, 109))
 BagPipe=Output(sd90_port_b, channel=1, program=(Classical+Var1, 110))
 Dog=Output(sd90_port_b, channel=14, program=(Classical+Var1, 124))
@@ -409,12 +408,15 @@ Jetplane=Output(sd90_port_b, channel=1, program=(Classical+Var7, 126))
 # Classical instrument part - Variation 8
 Starship=Output(sd90_port_b, channel=1, program=(Classical+Var8, 126))
 
-# Contemporary instrument part
+# Contemporary instrument part - Variation 0
 Helicpoter=Output(sd90_port_b, channel=1, program=(Contemporary, 126))
 Seashore=Output(sd90_port_b, channel=2, program=(Contemporary, 123))
 
 # Contemporary instrument part - Variation 1
 Rain=Output(sd90_port_b, channel=1, program=(Contemporary+Var1, 123))
+
+# Contemporary instrument part - Variation 2
+OctStrings=Output(sd90_port_b, channel=1, program=(Contemporary+Var2, 49))
 
 
 ### End SD-90 Patch list
@@ -423,9 +425,17 @@ Rain=Output(sd90_port_b, channel=1, program=(Contemporary+Var1, 123))
 
 Reset = SysEx(sd90_port_a, "f0,41,10,00,48,12,00,00,00,00,00,00,f7")
 
-
 # Audio FX
+SpaceMulti = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 10, 3e, f7")
+GuitarMulti = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 20, 2e, f7")
+VocalBassMulti = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 30, 1e, f7")
+GrooveMulti = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 40, 0e, f7")
+Isolator = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 48, 06, f7")
+CenterCanceler = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 50, 7e, f7")
+LoFiProcessor = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 60, 6e, f7")
+SurroundRV = SysEx(sd90_port_a, "f0, 41, 10, 00, 48, 12, 02, 10, 20, 00, 70, 5e, f7")
 MasteringEffect = SysEx(sd90_port_a,"f0,41,10,00,48,12,02,10,20,00,78,56,f7")
+
 AfxOn  = SysEx(sd90_port_a, "f0,41,10,00,48,12,02,10,11,43,01,19,f7")
 AfxOff = SysEx(sd90_port_a, "f0,41,10,00,48,12,02,10,11,43,00,1a,f7")
 
@@ -433,9 +443,12 @@ AfxOff = SysEx(sd90_port_a, "f0,41,10,00,48,12,02,10,11,43,00,1a,f7")
 MixToAfx = SysEx(sd90_port_a, "f0,41,10,00,48,12,02,10,10,00,06,58,f7")
 
 # Audio Level Control
-WaveLevel  = Port(sd90_port_a) >> CtrlToSysEx(7, "f0,41,10,00,48,12,02,10,11,20,00,3f,f7", 10, 6)
-InstLevel  = Port(sd90_port_a) >> CtrlToSysEx(7, "f0,41,10,00,48,12,02,10,11,30,00,3f,f7", 10, 6)
-MicGtLevel = Port(sd90_port_a) >> CtrlToSysEx(7, "f0,41,10,00,48,12,02,10,11,00,00,3f,f7", 10, 6)
+WaveLevel  =  CtrlToSysEx(0, "f0,41,10,00,48,12,02,10,11,20,00,3f,f7", 10, 6)
+InstLevel  =  CtrlToSysEx(1, "f0,41,10,00,48,12,02,10,11,30,00,3f,f7", 10, 6)
+MicGtLevel =  CtrlToSysEx(2, "f0,41,10,00,48,12,02,10,11,00,00,3f,f7", 10, 6)
+DigiLevel =   CtrlToSysEx(3, "f0,41,10,00,48,12,02,10,11,10,00,3f,f7", 10, 6)
+MasterLevel = CtrlToSysEx(4, "f0,41,10,00,48,12,02,10,00,00,00,3f,f7", 10, 6)
+RecLevel =    CtrlToSysEx(5, "f0,41,10,00,48,12,02,10,00,01,00,3f,f7", 10 ,6)  
 
 # SD-90 Bank Patch
 SP1  =   SysEx(sd90_port_a, "f0,41,10,00,48,12,10,00,20,04,50,00,00,7c,f7")
@@ -459,8 +472,9 @@ SD90_Initialize = [
 # This device has 4 banks, each bank contains 50 programs 
 #
 
-# Internal Midi channel configured in the gt1k USB options
 gt1k_port = "mpk_midi"
+
+# Internal Midi channel configured in the gt1k USB options
 gt1k_channel = 9
 
 gt1kBankSelector = CtrlValueFilter(0, 4) >> [
@@ -474,21 +488,6 @@ gt1kBank4 = Ctrl(0, 3) >> gt1kBankSelector
 
 gt1kProgramSelector = Program(gt1k_port, channel = gt1k_channel, program = EVENT_VALUE)
 
-# Send CC
-#gt1k_Ctrl =  Ctrl(gt1k_midi_1, gt1k_channel, EVENT_CTRL, EVENT_VALUE)
-
-# Send CC aliases
-#gt1k_Tuner = Ctrl(gt1k_midi_1, gt1k_channel, EVENT_CTRL, EVENT_VALUE)
-#gt1k_Volume = gt1k_Ctrl
-#gt1k_Expression = gt1k_Ctrl
-
-# Mididings control patch
-#gt1k_control = (Filter(CTRL) >> 
-#    CtrlSplit({
-#          4: gt1k_Tuner,
-#          7: gt1k_Volume,
-#         20: gt1kProgramSelector
-#    }))
         
 '''
     The Soundcraft UI 16 patches for mididings
@@ -525,6 +524,10 @@ def ui_left(ev):
 ''' Wrapper over ui_event '''
 def ui_right(ev):
     return event_value_converter(ev, 1)
+
+def channel_to_input(ev):
+    ''' Convert the midi channel number to the soundcraft input number '''
+    return ev.channel - 1
 
 
 # Osc Soundcraft Bridge definition
@@ -671,6 +674,15 @@ player_treble = [
         SendOSC(osb_port, treble_path, 1, cursor_value_converter, "p"),
     ]
 
+# Auxiliary outputs
+ui_aux_mix = [
+        SendOSC(osb_port, mix_path, event_value_converter, cursor_value_converter, "a"),
+    ]
+
+ui_aux_send_mix = [
+        SendOSC(osb_port, "/auxsend", channel_to_input, cursor_value_converter, 0),
+]
+
 # -----------------------------------------------------
 # Group patch by channel
 ui_standard_fx = ChannelSplit({
@@ -749,6 +761,17 @@ soundcraft_control=[
         CtrlFilter(7) >> [ui_player_mix_eq, ui_line_mix_eq],
 
         CtrlFilter(100) >> ui_master,
+
+        CtrlFilter(101, 102, 103, 104) >> CtrlSplit({
+            101 : Ctrl(0, EVENT_VALUE),
+            102 : Ctrl(1, EVENT_VALUE),
+            103 : Ctrl(2, EVENT_VALUE),
+            104 : Ctrl(3, EVENT_VALUE),
+        }) >> [ui_aux_mix],
+        
+        CtrlFilter(105) >> CtrlSplit({
+            105 : Pass(),
+        }) >> [ui_aux_send_mix],
     ],
 ]
         
@@ -1055,11 +1078,6 @@ i_rush =  Pass()
 # Default patch - tout en paralelle mais séparé par contexte
 p_rush = Pass()
 
-# Subdivisions
-
-# Init patch
-i_rush_sub =  Pass()
-
 # Grand Designs
 
 # Init patch
@@ -1070,11 +1088,6 @@ p_rush_gd =  Pass()
 
 # Youtube SoundCraftBridge Demo
 p_rush_gd_demo = Pass()
-
-# The Trees
-
-# Init patch
-i_rush_trees =  Pass()
 
 # Foot keyboard output
 p_rush_trees_foot = Velocity(fixed=110) >> Output(sd90_port_a, channel=1, program=(Classical,51), volume=110, ctrls={93:75, 91:75})
@@ -1142,6 +1155,13 @@ p_transport = (pk5_filter >> [
 # Interlude patch, between two songs
 interlude = mpk_b_filter >> ChannelFilter(16) >> KeyFilter(notes=[0,49]) >> Velocity(fixed=50) >> LatchNotes(reset=0) >> [Oxigenizer]
 
+# Restless Natives
+restless_natives_init = Call(GT1KPreset("U09-3"))
+restless_natives = [
+    (KeyFilter('d3') >> LatchNotes(True, reset='c3') >>  Harmonize('d', 'major', ['unison', 'octave'])),
+    (KeyFilter(notes=['f3', 'e3']))
+] >> Transpose(-24) >> Velocity(fixed=100) >> Goblin
+
 # Glissando
 p_glissando=(Filter(NOTEON) >> Call(glissando, 48, 84, 100, 0.01, -1, sd90_port_a))
 
@@ -1174,61 +1194,6 @@ MPG123_SD90_B = Call(Mp3Player("SD90"))
 MPG123_PLAYLIST = Call(Playlist())
 
         
-#
-# Patches for the run().control patch
-#
-
-# Transport filter Filter for MPG123 and Spotipy and VLC
-jump_filter    = CtrlFilter(1)  >> CtrlValueFilter(0, 121)
-volume_filter  = CtrlFilter(7)  >> CtrlValueFilter(0, 101)
-trigger_filter = Filter(NOTEON) >> Transpose(-36)
-transport_filter = [jump_filter, volume_filter, trigger_filter]
-
-key_mp3_control = transport_filter >> MPG123_SD90_A
-pk5_mp3_control = transport_filter >> MPG123_SD90_B
-q49_mp3_control = transport_filter >> MPG123_U192k
-mpk_vlc_control = trigger_filter >> VLC_BASE
-q49_vlc_control = trigger_filter >> VLC_BASE
-
-# Spotify
-spotify_control = [
-  trigger_filter,
-  volume_filter, 
-  CtrlFilter(44),
-] >> Call(SpotifyPlayer())
-
-mpk_soundcraft_control=Filter(CTRL|NOTE) >> [
-        Filter(CTRL) >> Pass(),
-        Filter(NOTE) >> NoteOn(EVENT_NOTE, 127) >> Port(midimix_midi),
-    ] >> soundcraft_control
-
-
-# Midi input control patch
-control_patch = PortSplit({
-    midimix_midi : soundcraft_control,
-    mpk_midi : ChannelSplit({
-        4 : pk5_mp3_control,
-    }),
-    mpk_port_a : ChannelSplit({
-         1 : CakewalkController,
-         8 : key_mp3_control,
-        12 : mpk_vlc_control,
-        13 : p_hue,
-        #14 : spotify_control,
-    }),
-    mpk_port_b : ChannelSplit({
-         4 : pk5_mp3_control,
-        16 : soundcraft_control,    # My Nektar Expression Pedal to control the main mix
-    }),
-    q49_midi : ChannelSplit({
-         1 : q49_mp3_control,
-    }),
-    sd90_midi_1 : Pass(),
-    sd90_midi_2 : Pass(),
-    behringer   : Pass(),
-})
-
-        
 global_init = [
     SD90_Initialize,
 ]
@@ -1242,15 +1207,15 @@ _scenes = {
             Scene("Generic", init_patch=MPG123_PLAYLIST, patch=Discard() // p_rush),
             Scene(
                 "Subdivisions",
-                init_patch=i_rush_sub // MPG123_PLAYLIST,
-                patch=Discard() // p_rush,
+                init_patch=[Call(GT1KPreset("U10-2")), MPG123_PLAYLIST],
+                patch=Discard(),
             ),
             Scene(
                 "TheTrees",
-                init_patch=i_rush_trees // MPG123_PLAYLIST,
-                patch=Discard() // p_rush_trees,
+                init_patch=MPG123_PLAYLIST,
+                patch=p_rush_trees,
             ),
-            Scene("Grand Designs", init_patch=i_rush_gd, patch=Discard() // p_rush_gd),
+            Scene("Grand Designs", init_patch=Call(GT1KPreset("U10-1")), patch=Discard()),
             Scene("Marathon", init_patch=i_rush, patch=Discard()),
             Scene("YYZ", init_patch=i_rush // MPG123_PLAYLIST, patch=p_rush),
             Scene("Limelight", init_patch=i_rush // MPG123_PLAYLIST, patch=p_rush),
@@ -1280,7 +1245,10 @@ _scenes = {
             ),
             Scene(
                 "CloserToTheHeart",
-                [ChannelFilter(1) >> closer_main, pk5_filter >> Transpose(-24) >> closer_base],
+                [
+                    ChannelFilter(1) >> closer_main,
+                    pk5_filter >> Transpose(-24) >> closer_base,
+                ],
             ),
             Scene(
                 "Time Stand Still",
@@ -1352,17 +1320,24 @@ _scenes = {
         [
             Scene(
                 "BassCover",
-                init_patch=MPG123_PLAYLIST // Call(GT1000Patch("U09-1")),
+                init_patch=MPG123_PLAYLIST // Call(GT1KPreset("U47-1")),
                 patch=Discard(),
             ),
             Scene("InBigCountry", init_patch=i_big_country, patch=p_big_country),
             Scene("HighlandScenery", init_patch=Discard(), patch=p_highland_scenery),
             Scene("Inwards", init_patch=Discard(), patch=p_pk5ctrl_generic >> p_base),
             Scene("AnglePark", init_patch=Discard(), patch=p_pk5ctrl_generic >> p_base),
-            Scene("Wonderland", init_patch=p_wonderland_init, patch=p_wonderland),
+            Scene("Wonderland", init_patch=Call(GT1KPreset("U09-5")), patch=Discard()),
             Scene(
-                "Harvest Home", init_patch=Call(GT1000Patch("U09-4")), patch=Discard()
+                "Harvest Home", init_patch=Call(GT1KPreset("U09-4")), patch=Discard()
             ),
+            Scene(
+                "Restless Natives",
+                init_patch=restless_natives_init,
+                patch=restless_natives,
+            ),
+            Scene("Fields of fire (bass)", init_patch=Call(GT1KPreset("U47-5")), patch=Discard()),
+            Scene("Fields of fire (guit)", init_patch=Call(GT1KPreset("U09-2")), patch=Discard()),
         ],
     ),
     6: SceneGroup(
@@ -1607,47 +1582,84 @@ _scenes = {
     18: SceneGroup(
         "GT-1000",
         [
-            Scene("U01-1", init_patch=Call(GT1000Patch("U01-1")), patch=Discard()),
-            Scene("U09-3", init_patch=Call(GT1000Patch("U09-3")), patch=Discard()),
-            Scene("P01-3", init_patch=Call(GT1000Patch("P01-3")), patch=Discard()),
-            Scene("P26-3", init_patch=Call(GT1000Patch("P26-3")), patch=Discard()),
-            Scene("U47-1", init_patch=Call(GT1000Patch("U47-1")), patch=Discard()),
-        ],
-    ),
-    19: SceneGroup(
-        "ScendId19:Free",
-        [
-            Scene("Select option", init_patch=Discard(), patch=Discard()),
-        ],
-    ),
-    20: SceneGroup(
-        "SceneId20:Free",
-        [
-            Scene("Select", init_patch=Discard(), patch=Discard()),
-        ],
-    ),
-    21: SceneGroup(
-        "SceneId21:Free",
-        [
-            Scene("Select", init_patch=Discard(), patch=Discard()),
-        ],
-    ),
-    22: SceneGroup(
-        "SceneId22:Free",
-        [
-            Scene("Select", init_patch=Discard(), patch=Discard()),
+            Scene("U01-1", init_patch=Call(GT1KPreset("U01-1")), patch=Discard()),
+            Scene("U09-3", init_patch=Call(GT1KPreset("U09-3")), patch=Discard()),
+            Scene("P01-3", init_patch=Call(GT1KPreset("P01-3")), patch=Discard()),
+            Scene("P26-3", init_patch=Call(GT1KPreset("P26-3")), patch=Discard()),
+            Scene("U47-1", init_patch=Call(GT1KPreset("U47-1")), patch=Discard()),
         ],
     ),
 }
 
+        
+#
+# Patches for the run().control patch
+#
 
-# PROD
-pre  = ~Filter(SYSRT_CLOCK) >> ~ChannelFilter(8, 9, 11) 
+# Transport filter Filter for MPG123 and Spotipy and VLC
+jump_filter    = CtrlFilter(1)  >> CtrlValueFilter(0, 121)
+volume_filter  = CtrlFilter(7)  >> CtrlValueFilter(0, 101)
+trigger_filter = Filter(NOTEON) >> Transpose(-36)
+transport_filter = [jump_filter, volume_filter, trigger_filter]
+
+mpg123_controller_1 = transport_filter >> MPG123_SD90_A
+mpg123_controller_2 = transport_filter >> MPG123_SD90_B
+vlc_controller_1 = trigger_filter >> VLC_BASE
+
+sd90_controller = Port(sd90_port_a) >> [ 
+    CtrlFilter(0) >> WaveLevel,
+    CtrlFilter(1) >> InstLevel,
+    CtrlFilter(2) >> MicGtLevel,
+    CtrlFilter(3) >> DigiLevel,
+    CtrlFilter(4) >> MasterLevel,
+    CtrlFilter(5) >> RecLevel,
+ ]
+
+# Spotify
+spotify_controller = [
+  trigger_filter,
+  volume_filter, 
+  CtrlFilter(44),
+] >> Call(SpotifyPlayer())
+
+soundcraft_controller=Filter(CTRL|NOTE) >> [
+        Filter(CTRL) >> Pass(),
+        Filter(NOTE) >> NoteOn(EVENT_NOTE, 127) >> Port(midimix_midi),
+    ] >> soundcraft_control
+
+
+# Midi input control patch
+control_patch = PortSplit({
+    midimix_midi : soundcraft_control,
+    mpk_midi : ChannelSplit({
+        4 : mpg123_controller_2,
+    }),
+    mpk_port_a : ChannelSplit({
+         1 : CakewalkController,
+         8 : mpg123_controller_1,
+         4 : mpg123_controller_2,
+        12 : vlc_controller_1,
+        13 : p_hue,
+        14: sd90_controller,
+    }),
+    mpk_port_b : ChannelSplit({
+         1 : Program(sd90_port_a, EVENT_CHANNEL, EVENT_VALUE),
+         2 : Channel(1) >> Port(mixxx_midi_0),
+         8 : mpg123_controller_1,
+         4 : mpg123_controller_2,
+    }),
+
+    sd90_midi_1 : Pass(),
+    sd90_midi_2 : Pass(),
+    behringer   : Pass(),
+    
+    # Direct routing of the Numark to the virtual port used by Mixxx
+    numark_midi_0 : Port(mixxx_midi_0)  
+})
+
+        
+pre  = ~Filter(SYSRT_CLOCK) >> ~ChannelFilter(8, 9, 11, 13) 
 post = Pass()
-
-# DEBUG
-#pre  = ~Filter(SYSRT_CLOCK) >> Print('input', portnames='in') 
-#post = Print('output',portnames='out')
 
 run(
     control=control_patch,
