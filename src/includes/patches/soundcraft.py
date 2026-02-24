@@ -220,15 +220,15 @@ ui_standard_stereo_eq = ChannelSplit({
 ui_line_mix_eq = ChannelSplit({
             1:ui_line_mix,
             2:line_treble_stereo,
-            4:line_bass_stereo,
             3:line_mid_stereo,
+            4:line_bass_stereo,
         })
 
 ui_player_mix_eq = ChannelSplit({
             1:ui_player_mix,
             2:player_treble_stereo,
-            4:player_bass_stereo,
             3:player_mid_stereo,
+            4:player_bass_stereo,
         })
         
 
