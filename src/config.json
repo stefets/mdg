@@ -1,9 +1,10 @@
 {
     "template": "main.mako",
     "includes": [
+        "includes/imports.py",
         "includes/functions/config.py",
         "includes/functions/hook.py",
-        "includes/helpers/common.py",
+        "includes/helpers.py",
         "includes/patches/filters.py",
         "includes/patches/sd90.py",
         "includes/patches/gt1000.py",
@@ -13,7 +14,7 @@
         "includes/patches/execution.py",
         "includes/patches/extensions.py",
         "includes/scenes/main.py",
-        "includes/controls/main.py",
+        "includes/controls.py",
         "includes/functions/run.py"
     ],
     "alsa": {
