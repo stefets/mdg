@@ -17,7 +17,7 @@ _scenes = {
             ),
             Scene(
                 "TheTrees",
-                init_patch=MPG123_PLAYLIST,
+                init_patch=[Call(GT1KPreset("U10-3")), MPG123_PLAYLIST],
                 patch=p_rush_trees,
             ),
             Scene("Grand Designs", init_patch=Call(GT1KPreset("U10-1")), patch=Discard()),
