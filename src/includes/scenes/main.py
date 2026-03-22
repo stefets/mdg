@@ -143,6 +143,8 @@ _scenes = {
             ),
             Scene("Fields of fire (bass)", init_patch=Call(GT1KPreset("U47-5")), patch=Discard()),
             Scene("Fields of fire (guit)", init_patch=Call(GT1KPreset("U09-2")), patch=Discard()),
+            Scene("PeaceInOurTime (bass)", init_patch=Call(GT1KPreset("U47-5")), patch=Discard()),
+            Scene("PeaceInOurTime (guit)", init_patch=Call(GT1KPreset("U09-1")), patch=Discard()),
         ],
     ),
     6: SceneGroup(
