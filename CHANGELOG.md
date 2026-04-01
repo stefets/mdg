@@ -5,6 +5,8 @@
 - Add MIDI support for Numark Party Mix MKII and Mixxx
 - Add new scenes for Fields Of Fire
 - *(sd90)* Add audio level controls for DigiLevel, MasterLevel, and RecLevel
+- Add new scenes for "PeaceInOurTime" with bass and guitar patches
+- Add new scenes and MIDI patch for "Peace in Our Time"
 
 ### 🚜 Refactor
 
@@ -18,6 +20,7 @@
 
 - Add initial CHANGELOG.md
 - Update CHANGELOG
+- Update CHANGELOG and README
 
 ### 🧪 Testing
 
@@ -29,6 +32,7 @@
 - Update full script example
 - Reorder channel check
 - Remove HttpClient and related test files
+- Update scene
 ## [0.0.1] - 2025-11-10
 
 ### 🚀 Features
