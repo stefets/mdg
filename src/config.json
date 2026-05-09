@@ -1,6 +1,5 @@
 {
-    "template": "main.mako",
-    "includes": [
+    "items": [
         "includes/imports.py",
         "includes/functions/config.py",
         "includes/functions/hook.py",
@@ -17,12 +16,9 @@
         "includes/controls.py",
         "includes/functions/run.py"
     ],
-    "alsa": {
-        "template": "asoundrc.mako",
-        "asoundrc": {
-            "U192k": "",
-            "SD90": "",
-            "GT1000" : ""
-        }
+    "asoundrc": {
+        "U192k": "",
+        "SD90": "",
+        "GT1000": ""
     }
 }
