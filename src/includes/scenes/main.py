@@ -115,14 +115,15 @@ _scenes = {
         ],
     ),
     4: SceneGroup(
-        "Recording",
+        "",
         [
-            Scene("Bass", init_patch=Discard(), patch=p_transport),
+            Scene("", init_patch=Discard(), patch=Discard()),
         ],
     ),
     5: SceneGroup(
         "BigCountry",
         [
+            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
             Scene(
                 "BassCover",
                 init_patch=MPG123_PLAYLIST // Call(GT1KPreset("U47-1")),
@@ -372,7 +373,7 @@ _scenes = {
     17: SceneGroup(
         "VLC",
         [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
+            Scene("Select a command", init_patch=Discard(), patch=Discard()),
             Scene("Stop", init_patch=VLC_STOP, patch=Discard()),
             Scene("Play", init_patch=VLC_PLAY, patch=Discard()),
             Scene("Pause", init_patch=VLC_PAUSE, patch=Discard()),
@@ -387,8 +388,9 @@ _scenes = {
         ],
     ),
     18: SceneGroup(
-        "GT-1000",
+        "GT1K",
         [
+            Scene("Select GT1K patch", init_patch=Discard(), patch=Discard()),
             Scene("U01-1", init_patch=Call(GT1KPreset("U01-1")), patch=Discard()),
             Scene("U09-3", init_patch=Call(GT1KPreset("U09-3")), patch=Discard()),
             Scene("P01-3", init_patch=Call(GT1KPreset("P01-3")), patch=Discard()),
