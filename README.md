@@ -23,7 +23,6 @@
       * AKAI MIDIMIX - Helper to manage the switch state and the LED of the Akai MIDIMIX
 ## Dependencies
 * Mako
-* argh
 ## Optionals dependencies
 * pyliblo3 
 * pyinotify

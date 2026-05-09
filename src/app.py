@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 
 import os
-import argh
+import sys
 import json
 import alsaaudio
 from mako.template import Template
@@ -17,24 +17,25 @@ def render_asoundrc(config) -> None:
         FILE.write(asoundrc.render(**audio_devices))
 
 
-def render_script(config, template=None) -> str:
+def render_script(config) -> str:
     # Generates the mididings script code
     return Template(filename=config["template"]).render(
         includes = config["includes"]
     )
 
-def render(config, template) -> str:
+def render(config) -> str:
     render_asoundrc(config["alsa"])
-    return render_script(config, template)
+    return render_script(config)
 
-def main(stemplate=None):
+def main(args = None) -> int:
     with open('config.json') as FILE:
         config = json.load(FILE)
-    print(render(config, stemplate))
+    print(render(config))
 
 
 '''
     Entry point
 '''
 
-argh.dispatch_command(main)
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]) or 0)
