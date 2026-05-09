@@ -7,6 +7,7 @@
 - *(sd90)* Add audio level controls for DigiLevel, MasterLevel, and RecLevel
 - Add new scenes for "PeaceInOurTime" with bass and guitar patches
 - Add new scenes and MIDI patch for "Peace in Our Time"
+- Update scene names and improve clarity in scene groups
 
 ### 🚜 Refactor
 
@@ -15,12 +16,15 @@
 - Add more modularity
 - *(soundcraft)* Switch  treble/bass knobs routing configuration
 - Finally, make the main template entirely modular
+- Remove argh dependency
+- Rename rendering functions and update template handling
 
 ### 📚 Documentation
 
 - Add initial CHANGELOG.md
 - Update CHANGELOG
 - Update CHANGELOG and README
+- Update CHANGELOG with new scenes and MIDI patch for "Peace in Our Time"
 
 ### 🧪 Testing
 
