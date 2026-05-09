@@ -147,15 +147,15 @@ ui_line_mix=[
         SendOSC(osb_port, mix_path, 1, cursor_value_converter, "l"),
     ]
 
-line_bass = [
+line_bass_stereo = [
         SendOSC(osb_port, bass_path, 0, cursor_value_converter, "l"),    
         SendOSC(osb_port, bass_path, 1, cursor_value_converter, "l"),
     ]
-line_mid = [
+line_mid_stereo = [
         SendOSC(osb_port, mid_path, 0, cursor_value_converter, "l"),    
         SendOSC(osb_port, mid_path, 1, cursor_value_converter, "l"),
     ]
-line_treble = [
+line_treble_stereo = [
         SendOSC(osb_port, treble_path, 0, cursor_value_converter, "l"),    
         SendOSC(osb_port, treble_path, 1, cursor_value_converter, "l"),
     ]
@@ -171,15 +171,15 @@ ui_player_mix=[
         SendOSC(osb_port, mix_path, 1, cursor_value_converter, "p"),
     ]
 
-player_bass = [
+player_bass_stereo = [
         SendOSC(osb_port, bass_path, 0, cursor_value_converter, "p"),    
         SendOSC(osb_port, bass_path, 1, cursor_value_converter, "p"),
     ]
-player_mid = [
+player_mid_stereo = [
         SendOSC(osb_port, mid_path, 0, cursor_value_converter, "p"),    
         SendOSC(osb_port, mid_path, 1, cursor_value_converter, "p"),
     ]
-player_treble = [
+player_treble_stereo = [
         SendOSC(osb_port, treble_path, 0, cursor_value_converter, "p"),
         SendOSC(osb_port, treble_path, 1, cursor_value_converter, "p"),
     ]
@@ -212,23 +212,23 @@ ui_standard_stereo_fx = ChannelSplit({
 # 
 ui_standard_stereo_eq = ChannelSplit({
             1:mix_stereo,
-            2:bass_stereo,
+            2:treble_stereo,
             3:mid_stereo,
-            4:treble_stereo,
+            4:bass_stereo,
         })
 
 ui_line_mix_eq = ChannelSplit({
             1:ui_line_mix,
-            2:line_bass,
-            3:line_mid,
-            4:line_treble,
+            2:line_treble_stereo,
+            3:line_mid_stereo,
+            4:line_bass_stereo,
         })
 
 ui_player_mix_eq = ChannelSplit({
             1:ui_player_mix,
-            2:player_bass,
-            3:player_mid,
-            4:player_treble,
+            2:player_treble_stereo,
+            3:player_mid_stereo,
+            4:player_bass_stereo,
         })
         
 

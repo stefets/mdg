@@ -3,19 +3,40 @@
 ### 🚀 Features
 
 - Add MIDI support for Numark Party Mix MKII and Mixxx
+- Add new scenes for Fields Of Fire
+- *(sd90)* Add audio level controls for DigiLevel, MasterLevel, and RecLevel
+- Add new scenes for "PeaceInOurTime" with bass and guitar patches
+- Add new scenes and MIDI patch for "Peace in Our Time"
+- Update scene names and improve clarity in scene groups
 
 ### 🚜 Refactor
 
 - Rename GT1000Patch to GT1KPreset and update references
 - *(mp3)* Rename wrapper to mp3_player for clarity and update references
+- Add more modularity
+- *(soundcraft)* Switch  treble/bass knobs routing configuration
+- Finally, make the main template entirely modular
+- Remove argh dependency
+- Rename rendering functions and update template handling
 
 ### 📚 Documentation
 
 - Add initial CHANGELOG.md
+- Update CHANGELOG
+- Update CHANGELOG and README
+- Update CHANGELOG with new scenes and MIDI patch for "Peace in Our Time"
 
 ### 🧪 Testing
 
 - Add Party Mix MKII
+
+### ⚙️ Miscellaneous Tasks
+
+- Remove duplicate files
+- Update full script example
+- Reorder channel check
+- Remove HttpClient and related test files
+- Update scene
 ## [0.0.1] - 2025-11-10
 
 ### 🚀 Features
@@ -39,12 +60,34 @@
 
 ### 🐛 Bug Fixes
 
+- Incorrect load_list usage
 - *(config)* Incorrect port name
 - *(gt1000)* Update target port comment for clarity and correct scene initialization
 - *(control)* Update mpk_port_a mapping to use CakewalkController
 
+### 💼 Other
+
+- Set the port for Sysex
+- Get NEWS from github, SVN is LOCKED
+- Allow switch to scene 1
+- Intelligent control patch
+- Missing import
+- Patch improvement
+- *(test)* Add the simplest in/out test possible
+
 ### 🚜 Refactor
 
+- *(vlc)* Use composition instead of inherit
+- Add mp3 controller patch /  enable audio card
+- *(mp3)* Use MPgy123 as property instead of inherit it
+- Scene change
+- *(mp3)* Add events (wip)
+- Stop inherit mpyg123
+- *(mp3)* Add managed events
+- Use the events callback (WIP)
+- Add toggle mute
+- *(event)* Use event handler instead of callback
+- Add scene
 - Use toggle
 - Adjust SD90 Sysex SET
 - *(cakewalk)* Update routing; add to a scene
@@ -69,6 +112,8 @@
 
 ### 📚 Documentation
 
+- Update requirements file
+- Update ReadMe
 - Update example script
 - Update readme
 - Update readme
@@ -80,6 +125,8 @@
 
 ### ⚙️ Miscellaneous Tasks
 
+- Remove useless comments
+- Add patch
 - Config change
 - Patch change
 - Scenes update
@@ -98,51 +145,3 @@
 - Update scene
 - *(rush)* Patch update
 - Update example script
-## [2024.05.04] - 2024-05-05
-
-### 🐛 Bug Fixes
-
-- Incorrect load_list usage
-
-### 🚜 Refactor
-
-- Add mp3 controller patch /  enable audio card
-- *(mp3)* Use MPgy123 as property instead of inherit it
-- Scene change
-- *(mp3)* Add events (wip)
-- Stop inherit mpyg123
-- *(mp3)* Add managed events
-- Use the events callback (WIP)
-- Add toggle mute
-- *(event)* Use event handler instead of callback
-- Add scene
-
-### ⚙️ Miscellaneous Tasks
-
-- Remove useless comments
-- Add patch
-## [20240228] - 2024-03-26
-
-### 💼 Other
-
-- Patch improvement
-- *(test)* Add the simplest in/out test possible
-
-### 🚜 Refactor
-
-- *(vlc)* Use composition instead of inherit
-
-### 📚 Documentation
-
-- Update requirements file
-- Update ReadMe
-## [2023.12.04] - 2023-12-05
-
-### 💼 Other
-
-- Set the port for Sysex
-- Get NEWS from github, SVN is LOCKED
-- Allow switch to scene 1
-- Intelligent control patch
-- Missing import
-## [multi-controller] - 2020-10-08

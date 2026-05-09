@@ -1,9 +1,9 @@
 {
-    "template": "main.mako",
-    "includes": [
+    "items": [
+        "includes/imports.py",
         "includes/functions/config.py",
         "includes/functions/hook.py",
-        "includes/helpers/common.py",
+        "includes/helpers.py",
         "includes/patches/filters.py",
         "includes/patches/sd90.py",
         "includes/patches/gt1000.py",
@@ -13,15 +13,12 @@
         "includes/patches/execution.py",
         "includes/patches/extensions.py",
         "includes/scenes/main.py",
-        "includes/controls/main.py",
+        "includes/controls.py",
         "includes/functions/run.py"
     ],
-    "alsa": {
-        "template": "asoundrc.mako",
-        "asoundrc": {
-            "U192k": "",
-            "SD90": "",
-            "GT1000" : ""
-        }
+    "asoundrc": {
+        "U192k": "",
+        "SD90": "",
+        "GT1000": ""
     }
 }

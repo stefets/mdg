@@ -195,8 +195,10 @@ p_big_country_live =  Pass()
 # Song : Highland Scenery
 p_highland_scenery =  Pass()
 
+# Song : Peace in our time
+p_peace_in_our_time = ([pk5_filter, mpk_a_filter] >> Channel(16) >> Transpose(-24) >> Port(sd90_midi_2))
 
-# Big Country fin de section ------------------------------------------
+# Big Country end region ------------------------------------------
 
 # Band : Octobre ------------------------------------------
 
@@ -206,7 +208,7 @@ i_octobre = []
 # Execution patch
 p_octobre =  Pass()
 
-# Octobre fin de section ------------------------------------------
+# Octobre end region ------------------------------------------
 
 # Band : Rush ------------------------------------------
 
@@ -249,7 +251,7 @@ p_rush_trees=(pk5_filter >>
         ] >> LatchNotes(False, reset='f3') >> p_rush_trees_foot
     ])
 
-# Rush fin de section ------------------------------------------
+# Rush end region ------------------------------------------
 
 # Muse Band
 p_muse = p_pk5ctrl_generic >> p_base
