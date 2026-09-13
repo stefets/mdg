@@ -1,8 +1,11 @@
-
+    
 # --------------------------------------------------------------------
 # Helper functions available for patches and controllers
 # --------------------------------------------------------------------
 
+with open("config.json") as FILE:
+    config = json.load(FILE)
+    
 # Glissando -------------------------------------------------------------------------------------------
 
 def glissando_process(ev, from_note, to_note, vel, duration, direction, port, on):
