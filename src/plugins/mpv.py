@@ -9,7 +9,7 @@ This plugin allows communication with mpv player through socket.
 """
 
 class MpvClient():
-    def __init__(self, address: str):
+    def __init__(self, address: str, mpv_event_callback=None):
         if address is None:
             raise ValueError("IPC socket path must be provided")
         
@@ -19,14 +19,25 @@ class MpvClient():
         self.request_id = 0
         self._buffer = b""
         self.responses = {}
+        self.mpv_event_callback = mpv_event_callback
         
+        # This thread will read from the socket and handle responses and events
         self._reader_thread = threading.Thread(
             target=self._read_socket,
             daemon=True
-        )
-        self._reader_thread.start()
+        ).start()
+
+        self.event_queue = Queue()
+        # This thread will process events from the event queue
+        self._event_thread = threading.Thread(
+            target=self._process_events,
+            daemon=True
+        ).start()
         
+        # Observable properties
         self.command("observe_property", 1, "pause")
+        self.command("observe_property", 1, "mute")
+        self.command("observe_property", 1, "volume")
 
     def command(self, *args):
         self.request_id += 1
@@ -78,14 +89,33 @@ class MpvClient():
                         response_queue.put(message)
 
                 elif "event" in message:
-                    print("MPV EVENT:", message)
-    
+                    self.event_queue.put(message)
+                    
+    def _process_events(self):
+        while True:
+            message = self.event_queue.get()
+
+            try:
+                self.handle_event(message)
+            except Exception as e:
+                print(f"MPV EVENT ERROR: {e}")
+            
+    def handle_event(self, event):
+        event_name = event.get("event")
+        if event_name == "property-change":
+            self.mpv_event_callback(event)
+        elif event_name == "end-file":
+            self.mpv_event_callback(event)
+        else:
+            # print(f"Unhandled event: {event}")
+            pass
+
     def set_property(self, property_name, value):
         self.command("set_property", property_name, value)
         
     def get_property(self, property_name):
         response = self.command("get_property", property_name)
-        return response.get("data")                        
+        return response.get("data")
     
     def load(self, filename):
         self.command("loadfile", filename)

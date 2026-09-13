@@ -28,9 +28,10 @@ class MpvAdapter():
         self.playlist = playlist
         self.jump_offset = 10
         self.autonext = False
+        self.current_entry = -1
 
         # The MPV client instance        
-        self.mpv = MpvClient(address)
+        self.mpv = MpvClient(address, self.mpv_event_callback)
 
         self.volume = 100
         self.mpv.volume(self.volume)
@@ -76,13 +77,26 @@ class MpvAdapter():
             }
         )
 
-        self.current_entry = -1
 
     # call from mididings
     def __call__(self, ev):
         self.ctrl_range_mapping[ev.data1](
             ev
         ) if ev.type == _constants.CTRL else self.note_range_mapping[ev.data1](ev)
+
+    # Event from MpvClient
+    def mpv_event_callback(self, message):
+        if message.get("event") == "end-file":
+            if message.get("reason") == "eof":
+                if self.autonext:
+                    self.load_current_entry(self.current_entry + 1)
+        elif message.get("event") == "property-change":
+            if message.get("name") == "volume":
+                self.volume = message.get("data")
+                self.update_display()
+        else:
+            print(f"Unhandled event: {message}")
+            pass
 
     # Logic
     def navigate_scene(self, ev):
@@ -147,9 +161,16 @@ class MpvAdapter():
         self.current_entry = 0
 
     def on_play(self, ev):
-        index = ev.data1
+        self.load_current_entry(ev.data1)
+        self.update_display()
 
+    def load_current_entry(self, index):
+        print(f"Loading entry {index} from playlist with {len(self.playlist.songs)} entries.")
         if index > len(self.playlist.songs):
+            print(
+                Fore.RED
+                + "Index {} is out of range for playlist with {} entries".format(index, len(self.playlist.songs))
+            )
             return
 
         self.mpv.unpause()  # Unpause before loading the file to ensure playback starts immediately
@@ -157,7 +178,7 @@ class MpvAdapter():
             str(self.playlist.songs[index - 1])
         )
         self.current_entry = index
-
+            
     def on_toggle_pause(self, ev):
         """Pause if playing, else resume if paused"""
         self.mpv.toggle_pause()
@@ -188,10 +209,8 @@ class MpvAdapter():
     def set_volume(self, ev):
         if ev.data2 % 2 != 0:
             return
-        self.volume = ev.data2
-        self.mpv.volume(self.volume)
+        self.mpv.volume(ev.data2)
         self.update_display()
-
 
     def set_offset(self, ev):
         jump = int(ev.data2 / 2)
