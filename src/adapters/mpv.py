@@ -3,11 +3,6 @@ import json
 from range_key_dict import RangeKeyDict
 from colorama import Fore, Style
 
-from extensions.common import (
-    Transport, 
-    Terminal
-)
-
 import mididings.constants as _constants
 from mididings.engine import (
     scenes,
@@ -36,9 +31,6 @@ class MpvAdapter():
         self.volume = 100
         self.mpv.volume(self.volume)
 
-        # Show things in stdout
-        self.terminal = Terminal()
-        
         # Accepted range | Range array over the note_mapping array
         # Upper bound is exclusive
         self.note_range_mapping = RangeKeyDict(
@@ -229,13 +221,12 @@ class MpvAdapter():
 
     def update_display(self):
         print(
-            " {}VOL={}% | JMP={}s | AN={} | {}{}{}".format(
+            " {}VOL={}% | JMP={}s | AN={} | {}{}".format(
                 Fore.RED,
                 self.volume,
                 self.jump_offset,
                 self.autonext,
                 self.get_current_song(),
-                self.terminal.spacer,
                 Style.RESET_ALL,
             ),
             end="\r",
