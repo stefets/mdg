@@ -3,14 +3,16 @@
 # Patches for the run().control patch
 #
 
-# Transport filter Filter for MPG123 and Spotipy and VLC
+# Transport filter
 jump_filter    = CtrlFilter(1)  >> CtrlValueFilter(0, 121)
 volume_filter  = CtrlFilter(7)  >> CtrlValueFilter(0, 101)
-trigger_filter = Filter(NOTEON) >> Transpose(-36)
+# TODO: Adjust Transpose for the MPK249 later (-36) and MPK261 (-24) to match the correct note range for triggering samples
+trigger_filter = Filter(NOTEON) >> Transpose(-24)
 transport_filter = [jump_filter, volume_filter, trigger_filter]
 
-mpg123_controller_1 = transport_filter >> MPG123_SD90_A
-mpg123_controller_2 = transport_filter >> MPG123_SD90_B
+mpv_controller_1 = transport_filter >> AUDIO_DEVICE_SD90_A
+mpv_controller_2 = transport_filter >> AUDIO_DEVICE_SD90_B
+mpv_controller_3= transport_filter >> AUDIO_DEVICE_U192k
 vlc_controller_1 = trigger_filter >> VLC_BASE
 
 sd90_controller = Port(sd90_port_a) >> [ 
@@ -34,26 +36,33 @@ soundcraft_controller=Filter(CTRL|NOTE) >> [
         Filter(NOTE) >> NoteOn(EVENT_NOTE, 127) >> Port(midimix_midi),
     ] >> soundcraft_control
 
+# Common controller for MPK249 and MPK261
+mpk_249_261_controller =  ChannelSplit({
+         1 : CakewalkController,
+         2 : mpv_controller_3,
+         4 : mpv_controller_2,
+         8 : mpv_controller_1,
+        12 : vlc_controller_1,
+        13 : p_hue,
+        14: sd90_controller,
+    })
 
 # Midi input control patch
 control_patch = PortSplit({
     midimix_midi : soundcraft_control,
-    mpk_midi : ChannelSplit({
-        4 : mpg123_controller_2,
+    mpk249_midi : ChannelSplit({
+        4 : mpv_controller_2,
     }),
-    mpk_port_a : ChannelSplit({
-         1 : CakewalkController,
-         8 : mpg123_controller_1,
-         4 : mpg123_controller_2,
-        12 : vlc_controller_1,
-        13 : p_hue,
-        14: sd90_controller,
+    mpk261_midi : ChannelSplit({
+        4 : mpv_controller_2,
     }),
-    mpk_port_b : ChannelSplit({
+    mpk249_port_a : mpk_249_261_controller,
+    mpk261_port_a : mpk_249_261_controller,
+    mpk249_port_b : ChannelSplit({
          1 : Program(sd90_port_a, EVENT_CHANNEL, EVENT_VALUE),
          2 : Channel(1) >> Port(mixxx_midi_0),
-         8 : mpg123_controller_1,
-         4 : mpg123_controller_2,
+         8 : mpv_controller_1,
+         4 : mpv_controller_2,
     }),
 
     sd90_midi_1 : Pass(),

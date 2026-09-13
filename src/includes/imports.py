@@ -19,7 +19,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Extensions
-from extensions.mp3 import *
+from adapters.mpv import MpvAdapter
+from plugins.playlist import PlaylistManager
 from extensions.vlc import *
 from extensions.philips import *
 from extensions.spotify import *
