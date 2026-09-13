@@ -1,4 +1,75 @@
-## [unreleased]
+## [0.1.0] - 2026-09-13
+
+### 🚀 Features
+
+- Add Akai MPK261
+- Add supported audio extensions #136
+- Open the config file in the helper.py #136
+- Add callback from MpvClient #136
+
+### 🐛 Bug Fixes
+
+- Correct log file names in run.sh for mpv instances
+
+### 🚜 Refactor
+
+- Add mpv_controller_3 to transport filter
+- Remove playlist loading in scene navigation
+- Initialize MPV client and set volume in constructor
+- Enhance command handling and response reading in MpvClient
+- Remove Transpose in control_patch
+- Update Transpose for MKP261 trigger (WIP)
+- *(gt1k)* Change target port
+- *(pk5)* Add Port
+- Update control_patch to use mpv_controller_2 for MPK249 and MPK261
+- Update channel mapping for MPK249 and MPK261 controllers
+- Unpause MPV before loading the next file to ensure immediate playback
+- Enhance socket communication handling in MpvClient
+
+### 📚 Documentation
+
+- Update README for mpv #136
+
+### ⚙️ Miscellaneous Tasks
+
+- Ensure newline at end of file in run.sh
+- Remove mp3 config #136
+- Add socket path in configuration #136
+- Rename mpv start script
+- Remove requirements.txt file
+## [0.0.3] - 2026-09-05
+
+### 🚀 Features
+
+- Generic test file with VirMIDI
+- Add a first minimal MpvClient as a plugin #136
+- Add an adapter #136
+- Add PlaylistManager and Playlist #136
+
+### 🐛 Bug Fixes
+
+- Init volume at startup
+
+### 🚜 Refactor
+
+- Add Party Mix V3 and restaure Party Mix V2 config
+- Remove mpg123 files and import #136
+- Add missing import + add def seek
+- Enable playlist listing
+- Remove the call to clear_screen()
+- *(mpv)* Set  --keep-open to no
+- Update Numark MIDI port names for PMV3 and PMV2
+
+### ⚙️ Miscellaneous Tasks
+
+- Remove test #136
+- Update controller name #136
+- Remove mpg123 term #136
+- Add run script #136
+- Mock Playlist #136
+- Rename numark ports
+- Add switches to mpv start command (logging, terminal)
+## [0.0.2] - 2026-08-04
 
 ### 🚀 Features
 
@@ -8,6 +79,9 @@
 - Add new scenes for "PeaceInOurTime" with bass and guitar patches
 - Add new scenes and MIDI patch for "Peace in Our Time"
 - Update scene names and improve clarity in scene groups
+- Update hook functionality and move scenes in the include directory
+- Add UM-2 MIDI ports and update Cakewalk output port
+- Add Edirol UM-2ex in control patch
 
 ### 🚜 Refactor
 
@@ -18,6 +92,7 @@
 - Finally, make the main template entirely modular
 - Remove argh dependency
 - Rename rendering functions and update template handling
+- Ignore channel 15 in pre patch
 
 ### 📚 Documentation
 
@@ -26,10 +101,12 @@
 - Update CHANGELOG and README
 - Update CHANGELOG with new scenes and MIDI patch for "Peace in Our Time"
 - Update rendered script example
+- Update changelog
 
 ### 🧪 Testing
 
 - Add Party Mix MKII
+- Add routing test
 
 ### ⚙️ Miscellaneous Tasks
 
@@ -39,6 +116,10 @@
 - Remove HttpClient and related test files
 - Update scene
 - Update scene name
+- Add mandoline patch and scene
+- Add file in hook
+- Add new imports
+- Remove dead wood
 ## [0.0.1] - 2025-11-10
 
 ### 🚀 Features
