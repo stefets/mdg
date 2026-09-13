@@ -15,8 +15,8 @@
 ## Extensions
   * The scr/extensions directory contains callable objects
     * Those extensions allow my mididings configuration to control modules I need like :
-      * mpg123 - in remote mode to play MP3 audio files
-        * It can start an instance of mpg123 for each sound card, each instance of mpg123 can play multiple audio files in parallel, this is possible with an asoundrc configuration that sets my PCM devices as dmix type
+      * mpv - in JSON IPC mode to play audio files
+        * It can start an instance of mpv for each sound card, each instance of mpv can play multiple audio files in parallel, this is possible with an asoundrc configuration that sets my PCM devices as dmix type
       * Philips Hue - API allow the send requests to a Philips Hue Bridge
       * Spotify - call their API to control a player
       * VLC Server - Send HTTP requests to a VLC server
@@ -28,7 +28,7 @@
 * pyinotify
 * pyalsaaudio
 * vlc and python-vlc-http
-* mpg123 (recommended) or mpyg321 (not recommended)
+* mpv
 * python-dotenv
 * colorama
 * spotipy
