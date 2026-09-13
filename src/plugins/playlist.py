@@ -1,8 +1,6 @@
 from pathlib import Path
 from mididings.engine import scenes, current_scene, current_subscene
-from extensions.common import (
-    Terminal
-)
+
 class PlaylistManager:
     def __init__(self):
         self.playlist = Playlist()
@@ -39,7 +37,6 @@ class Playlist:
     
     def __init__(self):
         self.songs = []
-        self.terminal = Terminal()
 
     def create(self, path):
         self.songs = [
@@ -53,10 +50,10 @@ class Playlist:
 
     def listing(self):
         if not self.songs:
-            self.terminal.write_line("No files found in " + path)
+            print("No files found in " + path)
             return
 
         rank = 0
         for song in self.songs:
             rank += 1
-            self.terminal.write_line2(str(rank).zfill(2), song)
+            print(str(rank).zfill(2) + " " + str(song))

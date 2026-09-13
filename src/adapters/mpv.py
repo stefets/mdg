@@ -222,7 +222,7 @@ class MpvAdapter():
             return "IndexError"
 
     def update_display(self):
-        self.terminal.update()
+         self.terminal.update()
 
     def on_replay(self, ev):
         if self.current_entry > 0:
