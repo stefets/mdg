@@ -20,5 +20,12 @@
         "U192k": "",
         "SD90": "",
         "GT1000": ""
+    },
+    "mpv": {
+        "socket": {
+            "U192k": "/tmp/u192k.sock",
+            "SD90_A": "/tmp/sd90a.sock",
+            "SD90_B": "/tmp/sd90b.sock"
+        }
     }
 }
