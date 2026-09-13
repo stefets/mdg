@@ -3,11 +3,6 @@ import json
 from range_key_dict import RangeKeyDict
 from colorama import Fore, Style
 
-from extensions.common import (
-    Transport, 
-    Terminal
-)
-
 import mididings.constants as _constants
 from mididings.engine import (
     scenes,
@@ -21,11 +16,13 @@ from mididings.event import NoteOnEvent
 from plugins.mpv import MpvClient
 
 class MpvAdapter():
-    def __init__(self, address: str, playlist):
+    def __init__(self, address: str, playlist, terminal):
         if address is None:
             raise ValueError("IPC socket path must be provided")
 
         self.playlist = playlist
+        self.terminal = terminal
+        self.autonext.register(self)
         self.jump_offset = 10
         self.autonext = False
         self.current_entry = -1
@@ -36,9 +33,6 @@ class MpvAdapter():
         self.volume = 100
         self.mpv.volume(self.volume)
 
-        # Show things in stdout
-        self.terminal = Terminal()
-        
         # Accepted range | Range array over the note_mapping array
         # Upper bound is exclusive
         self.note_range_mapping = RangeKeyDict(
@@ -228,19 +222,7 @@ class MpvAdapter():
             return "IndexError"
 
     def update_display(self):
-        print(
-            " {}VOL={}% | JMP={}s | AN={} | {}{}{}".format(
-                Fore.RED,
-                self.volume,
-                self.jump_offset,
-                self.autonext,
-                self.get_current_song(),
-                self.terminal.spacer,
-                Style.RESET_ALL,
-            ),
-            end="\r",
-            flush=True,
-        )
+        self.terminal.update()
 
     def on_replay(self, ev):
         if self.current_entry > 0:
