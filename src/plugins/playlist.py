@@ -27,6 +27,16 @@ class PlaylistManager:
         )
 
 class Playlist:
+    AUDIO_EXTENSIONS = {
+        ".mp3",
+        ".wav",
+        ".flac",
+        ".ogg",
+        ".opus",
+        ".m4a",
+        ".aac",
+    }
+    
     def __init__(self):
         self.songs = []
         self.terminal = Terminal()
@@ -35,7 +45,7 @@ class Playlist:
         self.songs = [
             p.resolve()
             for p in sorted(Path(path).glob("**/*"))
-            if p.suffix.lower() in {".mp3"}
+            if p.is_file() and p.suffix.lower() in self.AUDIO_EXTENSIONS
         ]
   
     def len(self):
