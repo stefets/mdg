@@ -20,9 +20,10 @@ class MpvAdapter():
         if address is None:
             raise ValueError("IPC socket path must be provided")
 
+        self.address = address
         self.playlist = playlist
         self.terminal = terminal
-        self.autonext.register(self)
+        self.terminal.register(self)
         self.jump_offset = 10
         self.autonext = False
         self.current_entry = -1
@@ -222,7 +223,7 @@ class MpvAdapter():
             return "IndexError"
 
     def update_display(self):
-         self.terminal.update()
+         self.terminal.refresh()
 
     def on_replay(self, ev):
         if self.current_entry > 0:

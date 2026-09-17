@@ -6,9 +6,10 @@ class TerminalUI:
 
     def __init__(self):
         self.adapters = []
-        self.volume = 46
-        self.jump = 14
-        self.auto_next = False
+        self.live = Live(
+            self.render(),
+            refresh_per_second=10,
+        )        
 
     def register(self, adapter):
         self.adapters.append(adapter)
@@ -16,12 +17,20 @@ class TerminalUI:
     def render(self):
         table = Table(title="MIDIDINGS")
 
-        table.add_column("Property")
-        table.add_column("Value")
+        table.add_column("MPV")
+        table.add_column("Volume")
+        table.add_column("Jump")
+        table.add_column("Auto-next")
+        table.add_column("Song")
 
-        table.add_row("Volume", f"{self.volume}%")
-        table.add_row("Jump", f"{self.jump}s")
-        table.add_row("Auto-next", str(self.auto_next))
+        for adapter in self.adapters:
+            table.add_row(
+                adapter.address,
+                f"{adapter.volume}%",
+                f"{adapter.jump_offset}s",
+                str(adapter.autonext),
+                adapter.get_current_song() or "",
+            )
 
         return table
 
@@ -34,3 +43,8 @@ class TerminalUI:
 
     def stop(self):
         self.live.stop()
+        
+    def refresh(self):
+        self.live.update(
+            self.render()
+        )
