@@ -10,9 +10,9 @@ volume_filter  = CtrlFilter(7)  >> CtrlValueFilter(0, 101)
 trigger_filter = Filter(NOTEON) >> Transpose(-24)
 transport_filter = [jump_filter, volume_filter, trigger_filter]
 
-mpv_controller_1 = transport_filter >> AUDIO_DEVICE_SD90_A
-mpv_controller_2 = transport_filter >> AUDIO_DEVICE_SD90_B
-mpv_controller_3= transport_filter >> AUDIO_DEVICE_U192k
+mpv_controller_sd90_a = transport_filter >> AUDIO_DEVICE_SD90_A
+mpv_controller_sd90_b = transport_filter >> AUDIO_DEVICE_SD90_B
+mpv_controller_u192k = transport_filter >> AUDIO_DEVICE_U192k
 vlc_controller_1 = trigger_filter >> VLC_BASE
 
 sd90_controller = Port(sd90_port_a) >> [ 
@@ -39,9 +39,9 @@ soundcraft_controller=Filter(CTRL|NOTE) >> [
 # Common controller for MPK249 and MPK261
 mpk_249_261_controller =  ChannelSplit({
          1 : CakewalkController,
-         2 : mpv_controller_3,
-         4 : mpv_controller_2,
-         8 : mpv_controller_1,
+         2 : mpv_controller_u192k,
+         4 : mpv_controller_sd90_b,
+         8 : mpv_controller_sd90_a,
         12 : vlc_controller_1,
         13 : p_hue,
         14: sd90_controller,
@@ -51,18 +51,18 @@ mpk_249_261_controller =  ChannelSplit({
 control_patch = PortSplit({
     midimix_midi : soundcraft_control,
     mpk249_midi : ChannelSplit({
-        4 : mpv_controller_2,
+        4 : mpv_controller_sd90_b,
     }),
     mpk261_midi : ChannelSplit({
-        4 : mpv_controller_2,
+        4 : mpv_controller_sd90_b,
     }),
     mpk249_port_a : mpk_249_261_controller,
     mpk261_port_a : mpk_249_261_controller,
     mpk249_port_b : ChannelSplit({
          1 : Program(sd90_port_a, EVENT_CHANNEL, EVENT_VALUE),
          2 : Channel(1) >> Port(mixxx_midi_0),
-         8 : mpv_controller_1,
-         4 : mpv_controller_2,
+         8 : mpv_controller_sd90_a,
+         4 : mpv_controller_sd90_b,
     }),
 
     sd90_midi_1 : Pass(),
