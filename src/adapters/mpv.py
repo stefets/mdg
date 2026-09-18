@@ -23,7 +23,7 @@ class MpvAdapter():
         self.address = address
         self.playlist = playlist
         self.terminal = terminal
-        self.terminal.register(self)
+        self.terminal.register_adapter(self)
         self.jump_offset = 10
         self.autonext = False
         self.current_entry = -1
@@ -72,12 +72,12 @@ class MpvAdapter():
             }
         )
 
-
     # call from mididings
     def __call__(self, ev):
         self.ctrl_range_mapping[ev.data1](
             ev
         ) if ev.type == _constants.CTRL else self.note_range_mapping[ev.data1](ev)
+        self.terminal.refresh()
 
     # Event from MpvClient
     def mpv_event_callback(self, message):
@@ -88,7 +88,6 @@ class MpvAdapter():
         elif message.get("event") == "property-change":
             if message.get("name") == "volume":
                 self.volume = message.get("data")
-                self.update_display()
         else:
             print(f"Unhandled event: {message}")
             pass
@@ -116,7 +115,6 @@ class MpvAdapter():
 
     def set_autonext(self, value):
         self.autonext = value
-        self.update_display()
 
     # Scenes navigation
     def home_scene(self, ev):
@@ -157,10 +155,9 @@ class MpvAdapter():
 
     def on_play(self, ev):
         self.load_current_entry(ev.data1)
-        self.update_display()
 
     def load_current_entry(self, index):
-        print(f"Loading entry {index} from playlist with {len(self.playlist.songs)} entries.")
+        #print(f"Loading entry {index} from playlist with {len(self.playlist.songs)} entries.")
         if index > len(self.playlist.songs):
             print(
                 Fore.RED
@@ -205,13 +202,11 @@ class MpvAdapter():
         if ev.data2 % 2 != 0:
             return
         self.mpv.volume(ev.data2)
-        self.update_display()
 
     def set_offset(self, ev):
         jump = int(ev.data2 / 2)
         if jump % 2 == 0:
             self.jump_offset = jump
-            self.update_display()
 
     def get_current_song(self):
         try:
@@ -221,9 +216,6 @@ class MpvAdapter():
                 )
         except IndexError:
             return "IndexError"
-
-    def update_display(self):
-         self.terminal.refresh()
 
     def on_replay(self, ev):
         if self.current_entry > 0:
