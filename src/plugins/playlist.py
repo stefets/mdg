@@ -2,8 +2,10 @@ from pathlib import Path
 from mididings.engine import scenes, current_scene, current_subscene
 
 class PlaylistManager:
-    def __init__(self):
+    def __init__(self, terminal):
         self.playlist = Playlist()
+        self.terminal = terminal
+        self.terminal.register_playlist(self.playlist)
         self.has_subscene = None
 
     def __call__(self, ev):
@@ -12,7 +14,7 @@ class PlaylistManager:
         subscene = self.get_subscene_name()
         path = f"{scene}/{subscene}" if subscene else scene
         self.playlist.create(f"/media/soundlib/{path}")
-        self.playlist.listing()
+        self.terminal.refresh()
 
     def get_scene_name(self):
         return scenes()[current_scene()][0]
@@ -48,12 +50,3 @@ class Playlist:
     def len(self):
         return len(self.songs)
 
-    def listing(self):
-        if not self.songs:
-            print("No files found in " + path)
-            return
-
-        rank = 0
-        for song in self.songs:
-            rank += 1
-            print(str(rank).zfill(2) + " " + str(song))
