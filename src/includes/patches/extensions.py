@@ -19,10 +19,10 @@ VLC_REPEAT_OFF    = NoteOn(45, 0)  >> VLC_BASE
 VLC_TOGGLE_LOOP   = NoteOn(127, 0) >> VLC_BASE
 VLC_TOGGLE_REPEAT = NoteOn(126, 0) >> VLC_BASE
 
-# AUDIO_DEVICE multiple instances allow me to play sounds in parallal (dmix)
 terminal = TerminalUI()
-manager = PlaylistManager()
+manager = PlaylistManager(terminal)
 
+# AUDIO_DEVICE multiple instances allow me to play sounds in parallal (dmix)
 mpv_config = config.get("mpv").get("socket")
 AUDIO_DEVICE_SD90_A = Call(MpvAdapter(mpv_config.get("SD90_A"), manager.playlist, terminal))
 AUDIO_DEVICE_SD90_B = Call(MpvAdapter(mpv_config.get("SD90_B"), manager.playlist, terminal))
