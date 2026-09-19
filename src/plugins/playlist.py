@@ -1,5 +1,5 @@
 from pathlib import Path
-from mididings.engine import scenes, current_scene, current_subscene
+from mididings.engine import scenes, current_scene
 
 class PlaylistManager:
     def __init__(self, terminal):
@@ -10,24 +10,15 @@ class PlaylistManager:
 
     def __call__(self, ev):
         scene = self.get_scene_name()
-        self.has_subscene = scenes()[current_scene()][1]
-        subscene = self.get_subscene_name()
-        path = f"{scene}/{subscene}" if subscene else scene
-        self.playlist.create(f"/media/soundlib/{path}")
+        self.playlist.create(f"/media/soundlib/{scene}")
         self.terminal.refresh()
 
     def get_scene_name(self):
         return scenes()[current_scene()][0]
 
-    def get_subscene_name(self):
-        return (
-            scenes()[current_scene()][1][current_subscene() - 1]
-            if self.has_subscene
-            else None
-        )
 
 class Playlist:
-    AUDIO_EXTENSIONS = {
+    EXTENSIONS = {
         ".mp3",
         ".wav",
         ".flac",
@@ -35,6 +26,9 @@ class Playlist:
         ".opus",
         ".m4a",
         ".aac",
+        ".mp4",
+        ".mkv",
+        ".webm",
     }
     
     def __init__(self):
@@ -44,7 +38,7 @@ class Playlist:
         self.songs = [
             p.resolve()
             for p in sorted(Path(path).glob("**/*"))
-            if p.is_file() and p.suffix.lower() in self.AUDIO_EXTENSIONS
+            if p.is_file() and p.suffix.lower() in self.EXTENSIONS
         ]
   
     def len(self):
