@@ -96,12 +96,6 @@ _scenes = {
         ],
     ),
     30: Scene("BassCover",init_patch=PLAYLIST_MANAGER, patch=Discard()),
-    40: SceneGroup(
-        "Not assigned",
-        [
-            Scene("", init_patch=Discard(), patch=Discard()),
-        ],
-    ),
     50: SceneGroup(
         "BigCountry",
         [
@@ -128,14 +122,6 @@ _scenes = {
             Scene("Fields of fire (guit)", init_patch=Call(GT1KPreset("U09-2")), patch=Discard()),
             Scene("PeaceInOurTime (bass)", init_patch=Call(GT1KPreset("U47-5")), patch=p_peace_in_our_time),
             Scene("PeaceInOurTime (guit)", init_patch=Call(GT1KPreset("U09-1")), patch=Discard()),
-        ],
-    ),
-    60: SceneGroup(
-        "GrandDesignsStudio",
-        [
-            Scene("Select a Subscene", init_patch=PLAYLIST_MANAGER, patch=Discard()),
-            Scene("PowerWindows", patch=p_rush_gd_demo),
-            Scene("Futur", init_patch=Discard(), patch=p_transport),
         ],
     ),
     70: SceneGroup(
@@ -316,36 +302,6 @@ _scenes = {
             Scene("Contemporary", init_patch=CONTEM, patch=Discard()),
             Scene("Solo", init_patch=SOLO, patch=Discard()),
             Scene("Enhanced", init_patch=ENHANC, patch=Discard()),
-        ],
-    ),
-    140: SceneGroup(
-        "MUSE",
-        [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Assassin", init_patch=Discard(), patch=p_muse),
-            Scene("Hysteria", init_patch=Discard(), patch=p_muse),
-            Scene("Cydonia", init_patch=Discard(), patch=p_muse),
-            Scene("Starlight", init_patch=Discard(), patch=p_muse),
-            Scene("Stockholm", init_patch=Discard(), patch=[p_muse_stockholm, p_muse]),
-        ],
-    ),
-    150: SceneGroup(
-        "Sampler",
-        [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Track1", init_patch=Discard(), patch=Discard()),
-        ],
-    ),
-    160: SceneGroup(
-        "POC",
-        [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-        ],
-    ),
-    170: SceneGroup(
-        "Not assigned",
-        [
-            Scene("", init_patch=Discard(), patch=Discard()),
         ],
     ),
     180: SceneGroup(
