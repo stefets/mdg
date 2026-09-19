@@ -340,28 +340,12 @@ _scenes = {
         "POC",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene(
-                "INTERLUDE",
-                patch=pk5_filter >> Filter(NOTEON) >> NoteOn(0, 0) >> VLC_PL,
-                init_patch=Pass(),
-            ),
         ],
     ),
     170: SceneGroup(
-        "VLC",
+        "Not assigned",
         [
-            Scene("Select a command", init_patch=Discard(), patch=Discard()),
-            Scene("Stop", init_patch=VLC_STOP, patch=Discard()),
-            Scene("Play", init_patch=VLC_PLAY, patch=Discard()),
-            Scene("Pause", init_patch=VLC_PAUSE, patch=Discard()),
-            Scene("Repeat-ON", init_patch=VLC_REPEAT_ON, patch=Pass()),
-            Scene("Repeat-OFF", init_patch=VLC_REPEAT_OFF, patch=Pass()),
-            Scene("Toggle-Loop", init_patch=VLC_TOGGLE_LOOP, patch=Pass()),
-            Scene("Toggle-Repeat", init_patch=VLC_TOGGLE_REPEAT, patch=Pass()),
-            Scene(
-                "Playlist item 1", init_patch=NoteOn(0, 0) >> VLC_PL, patch=Discard()
-            ),
-            Scene("Playlist item 2", init_patch=Ctrl(1, 0) >> VLC_PL, patch=Discard()),
+            Scene("", init_patch=Discard(), patch=Discard()),
         ],
     ),
     180: SceneGroup(

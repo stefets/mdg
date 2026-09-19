@@ -13,7 +13,6 @@ transport_filter = [jump_filter, volume_filter, trigger_filter]
 mpv_controller_sd90_a = transport_filter >> AUDIO_DEVICE_SD90_A
 mpv_controller_sd90_b = transport_filter >> AUDIO_DEVICE_SD90_B
 mpv_controller_u192k = transport_filter >> AUDIO_DEVICE_U192k
-vlc_controller_1 = trigger_filter >> VLC_BASE
 
 sd90_controller = Port(sd90_port_a) >> [ 
     CtrlFilter(0) >> WaveLevel,
@@ -42,7 +41,6 @@ mpk_249_261_controller =  ChannelSplit({
          2 : mpv_controller_u192k,
          4 : mpv_controller_sd90_b,
          8 : mpv_controller_sd90_a,
-        12 : vlc_controller_1,
         13 : p_hue,
         14: sd90_controller,
     })

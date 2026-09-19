@@ -4,21 +4,6 @@ Patches to control somes /extensions/ modules
 Those modules are callable objects (__call__)
 '''
 
-# VLC player - Singleton
-VLC_BASE = Filter(NOTEON) >> Call(VlcPlayer())
-
-# Playlist
-VLC_PL   = NoteOn(EVENT_DATA1, 0) >> VLC_BASE
-
-# Commands
-VLC_STOP  = NoteOn(37, 0) >> VLC_BASE
-VLC_PLAY  = NoteOn(39, 0) >> VLC_BASE
-VLC_PAUSE = NoteOn(44, 0) >> VLC_BASE
-VLC_REPEAT_ON     = NoteOn(43, 0)  >> VLC_BASE
-VLC_REPEAT_OFF    = NoteOn(45, 0)  >> VLC_BASE
-VLC_TOGGLE_LOOP   = NoteOn(127, 0) >> VLC_BASE
-VLC_TOGGLE_REPEAT = NoteOn(126, 0) >> VLC_BASE
-
 terminal = TerminalUI()
 manager = PlaylistManager(terminal)
 

@@ -21,7 +21,6 @@ load_dotenv()
 # Extensions
 from adapters.mpv import MpvAdapter
 from plugins.playlist import PlaylistManager
-from extensions.vlc import *
 from extensions.philips import *
 from extensions.spotify import *
 from extensions.midimix import *
