@@ -4,35 +4,25 @@ global_init = [
 ]
 
 _scenes = {
-    1: Scene("Initialize", init_patch=global_init, patch=Discard()),
-    2: SceneGroup(
+    10: Scene("Initialize", init_patch=global_init, patch=Discard()),
+    20: SceneGroup(
         "Rush",
         [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Generic", init_patch=PLAYLIST_MANAGER, patch=Discard() // p_rush),
-            Scene(
-                "Subdivisions",
-                init_patch=[Call(GT1KPreset("U10-2")), PLAYLIST_MANAGER],
-                patch=Discard(),
-            ),
-            Scene(
-                "TheTrees",
-                init_patch=[Call(GT1KPreset("U10-3")), PLAYLIST_MANAGER],
-                patch=p_rush_trees,
-            ),
+            Scene("Select a Subscene", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+            Scene("Generic", patch=Discard() // p_rush),
+            Scene("Subdivisions",init_patch=Call(GT1KPreset("U10-2")),patch=Discard()),
+            Scene("TheTrees",init_patch=Call(GT1KPreset("U10-3")),patch=p_rush_trees),
             Scene("Grand Designs", init_patch=Call(GT1KPreset("U10-1")), patch=Discard()),
             Scene("Grand Designs Mando", init_patch=Call(GT1KPreset("U10-4")), patch=p_grand_designs_mando),
             Scene("Marathon", init_patch=i_rush, patch=Discard()),
-            Scene("YYZ", init_patch=i_rush // PLAYLIST_MANAGER, patch=p_rush),
-            Scene("Limelight", init_patch=i_rush // PLAYLIST_MANAGER, patch=p_rush),
-            Scene("FlyByNight", init_patch=i_rush // PLAYLIST_MANAGER, patch=p_rush),
-            Scene("RedBarchetta", init_patch=i_rush // PLAYLIST_MANAGER, patch=p_rush),
-            Scene("Freewill", init_patch=i_rush // PLAYLIST_MANAGER, patch=p_rush),
-            Scene("SpritOfRadio", init_patch=i_rush // PLAYLIST_MANAGER, patch=p_rush),
-            Scene("TomSawyer", init_patch=i_rush // PLAYLIST_MANAGER, patch=p_rush),
-            Scene(
-                "CloserToTheHeart", init_patch=i_rush // PLAYLIST_MANAGER, patch=p_rush
-            ),
+            Scene("YYZ", init_patch=i_rush, patch=p_rush),
+            Scene("Limelight", init_patch=i_rush, patch=p_rush),
+            Scene("FlyByNight", init_patch=i_rush, patch=p_rush),
+            Scene("RedBarchetta", init_patch=i_rush, patch=p_rush),
+            Scene("Freewill", init_patch=i_rush, patch=p_rush),
+            Scene("SpritOfRadio", init_patch=i_rush, patch=p_rush),
+            Scene("TomSawyer", init_patch=i_rush, patch=p_rush),
+            Scene("CloserToTheHeart", init_patch=i_rush, patch=p_rush            ),
             Scene(
                 "RedBarchetta",
                 init_patch=i_rush,
@@ -105,29 +95,20 @@ _scenes = {
             #         })),
         ],
     ),
-    3: SceneGroup(
-        "BassCover",
-        [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Default", init_patch=PLAYLIST_MANAGER, patch=Discard()),
-            Scene("Queen", init_patch=PLAYLIST_MANAGER, patch=Discard()),
-            Scene("T4F", init_patch=PLAYLIST_MANAGER, patch=Discard()),
-            Scene("Toto", init_patch=PLAYLIST_MANAGER, patch=Discard()),
-        ],
-    ),
-    4: SceneGroup(
+    30: Scene("BassCover",init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    40: SceneGroup(
         "Not assigned",
         [
             Scene("", init_patch=Discard(), patch=Discard()),
         ],
     ),
-    5: SceneGroup(
+    50: SceneGroup(
         "BigCountry",
         [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
+            Scene("Select a Subscene", init_patch=PLAYLIST_MANAGER, patch=Discard()),
             Scene(
                 "BassCover",
-                init_patch=PLAYLIST_MANAGER // Call(GT1KPreset("U47-1")),
+                init_patch=Call(GT1KPreset("U47-1")),
                 patch=Discard(),
             ),
             Scene("InBigCountry", init_patch=i_big_country, patch=p_big_country),
@@ -149,15 +130,15 @@ _scenes = {
             Scene("PeaceInOurTime (guit)", init_patch=Call(GT1KPreset("U09-1")), patch=Discard()),
         ],
     ),
-    6: SceneGroup(
+    60: SceneGroup(
         "GrandDesignsStudio",
         [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("PowerWindows", init_patch=PLAYLIST_MANAGER, patch=p_rush_gd_demo),
+            Scene("Select a Subscene", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+            Scene("PowerWindows", patch=p_rush_gd_demo),
             Scene("Futur", init_patch=Discard(), patch=p_transport),
         ],
     ),
-    7: SceneGroup(
+    70: SceneGroup(
         "Keyboard",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
@@ -190,7 +171,7 @@ _scenes = {
             Scene("NatureSound", akai_pad_nature),
         ],
     ),
-    8: SceneGroup(
+    80: SceneGroup(
         "Cakewalk",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
@@ -206,21 +187,15 @@ _scenes = {
             ),
         ],
     ),
-    9: SceneGroup(
-        "MP3Player",
-        [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Hits", init_patch=PLAYLIST_MANAGER, patch=Discard()),
-            Scene("Middleage", init_patch=PLAYLIST_MANAGER, patch=Discard()),
-            Scene("TV", init_patch=PLAYLIST_MANAGER, patch=Discard()),
-            Scene("NinaHagen", init_patch=PLAYLIST_MANAGER, patch=Discard()),
-            Scene("PowerWindows", init_patch=PLAYLIST_MANAGER, patch=Discard()),
-            Scene("GraceUnderPressure", init_patch=PLAYLIST_MANAGER, patch=Discard()),
-            Scene("SteveMorse", init_patch=PLAYLIST_MANAGER, patch=Discard()),
-            Scene("Colocs", init_patch=PLAYLIST_MANAGER, patch=Discard()),
-        ],
-    ),
-    10: SceneGroup(
+    90: Scene("Hits", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    91: Scene("Middleage", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    92: Scene("TV", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    93: Scene("NinaHagen", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    94: Scene("PowerWindows", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    95: Scene("GraceUnderPressure", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    96: Scene("SteveMorse", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    97: Scene("Colocs", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    100: SceneGroup(
         "Spotify",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
@@ -261,7 +236,7 @@ _scenes = {
             ),
         ],
     ),
-    11: SceneGroup(
+    110: SceneGroup(
         "HUE",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
@@ -276,7 +251,15 @@ _scenes = {
             Scene("Cuisine.Minimal", init_patch=HueCuisine, patch=Discard()),
             Scene("Chambre.Minimal", init_patch=HueChambreMaitre, patch=Discard()),
             Scene("AllOff", init_patch=HueAllOff, patch=Discard()),
-            Scene(
+
+        ],
+    ),
+    120: SceneGroup(
+        "SoundcraftUI",
+        [
+            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
+            Scene("Record", init_patch=ui_rectoggle, patch=Discard()),
+                        Scene(
                 "OneSliderMix",
                 init_patch=Discard(),
                 patch=[
@@ -322,14 +305,7 @@ _scenes = {
             ),
         ],
     ),
-    12: SceneGroup(
-        "SoundcraftUI",
-        [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Record", init_patch=ui_rectoggle, patch=Discard()),
-        ],
-    ),
-    13: SceneGroup(
+    130: SceneGroup(
         "SD90",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
@@ -342,7 +318,7 @@ _scenes = {
             Scene("Enhanced", init_patch=ENHANC, patch=Discard()),
         ],
     ),
-    14: SceneGroup(
+    140: SceneGroup(
         "MUSE",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
@@ -353,14 +329,14 @@ _scenes = {
             Scene("Stockholm", init_patch=Discard(), patch=[p_muse_stockholm, p_muse]),
         ],
     ),
-    15: SceneGroup(
+    150: SceneGroup(
         "Sampler",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
             Scene("Track1", init_patch=Discard(), patch=Discard()),
         ],
     ),
-    16: SceneGroup(
+    160: SceneGroup(
         "POC",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
@@ -371,7 +347,7 @@ _scenes = {
             ),
         ],
     ),
-    17: SceneGroup(
+    170: SceneGroup(
         "VLC",
         [
             Scene("Select a command", init_patch=Discard(), patch=Discard()),
@@ -388,7 +364,7 @@ _scenes = {
             Scene("Playlist item 2", init_patch=Ctrl(1, 0) >> VLC_PL, patch=Discard()),
         ],
     ),
-    18: SceneGroup(
+    180: SceneGroup(
         "GT1K",
         [
             Scene("Select GT1K patch", init_patch=Discard(), patch=Discard()),
