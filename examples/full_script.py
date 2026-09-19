@@ -18,7 +18,7 @@ from mididings import engine
 from mididings.extra import *
 from mididings.extra.osc import *
 from mididings.extra.inotify import *
-from mididings.event import PitchbendEvent, MidiEvent, NoteOnEvent, NoteOffEvent
+from mididings.event import PitchbendEvent, MidiEvent, NoteOnEvent, NoteOffEvent, CtrlEvent, ProgramEvent, SysExEvent
 from mididings.engine import scenes, current_scene, switch_scene, current_subscene, switch_subscene, output_event
 
 # Setup path
@@ -28,12 +28,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Extensions
-from extensions.mp3 import *
-from extensions.vlc import *
+from adapters.mpv import MpvAdapter
+from plugins.playlist import PlaylistManager
 from extensions.philips import *
 from extensions.spotify import *
 from extensions.midimix import *
 from extensions.gt1000 import GT1KPreset
+from ui.terminal import TerminalUI
         
 midimix_midi = "midimix"
 
@@ -44,15 +45,26 @@ sd90_port_b  = "sd90_port_b"
 sd90_midi_1  = "sd90_midi_1"
 sd90_midi_2  = "sd90_midi_2"
 
-mpk_port_a   = "mpk_port_a"
-mpk_port_b   = "mpk_port_b"
-mpk_midi     = "mpk_midi"
-mpk_remote   = "mpk_remote"
+# MPK249
+mpk249_port_a   = "mpk249_port_a"
+mpk249_port_b   = "mpk249_port_b"
+mpk249_midi     = "mpk249_midi"
+mpk249_remote   = "mpk249_remote"
+
+# MPK261
+mpk261_port_a   = "mpk261_port_a"
+mpk261_port_b   = "mpk261_port_b"
+mpk261_midi     = "mpk261_midi"
+mpk261_remote   = "mpk261_remote"
 
 gt1000_midi_1 = "gt1000_midi_1"
 gt1000_midi_2 = "gt1000_midi_2"
-numark_midi_0 = "numark_midi_0"
+numark_midi_pmv3_0 = "numark_midi_pmv3_0"
+numark_midi_pmv2_0 = "numark_midi_pmv2_0"
 mixxx_midi_0  = "mixxx_midi_0"
+
+um2_midi_1 = "um2_midi_1"
+um2_midi_2 = "um2_midi_2"
 
 config(
 
@@ -67,14 +79,21 @@ config(
         (sd90_midi_1,  '.*SD-90 MIDI 1.*',),
         (sd90_midi_2,  '.*SD-90 MIDI 2.*',),
         (behringer,    '.*UMC204HD 192k MIDI 1.*'),
-        (mpk_port_a,   '.*MPK249 Port A.*',),
-        (mpk_port_b,   '.*MPK249 Port B.*',),
-        (mpk_midi,     '.*MPK249 MIDI.*',),
-        (mpk_remote,   '.*MPK249 Remote.*',),
+        (mpk249_port_a,   '.*MPK249 Port A.*',),
+        (mpk249_port_b,   '.*MPK249 Port B.*',),
+        (mpk249_midi,     '.*MPK249 MIDI.*',),
+        (mpk249_remote,   '.*MPK249 Remote.*',),
+        (mpk261_port_a,   '.*MPK261 Port A.*',),
+        (mpk261_port_b,   '.*MPK261 Port B.*',),
+        (mpk261_midi,     '.*MPK261 MIDI.*',),
+        (mpk261_remote,   '.*MPK261 Remote.*',),
         (gt1000_midi_1,'.*GT-1000 MIDI 1.*',),
         (gt1000_midi_2,'.*GT-1000 MIDI 2.*',),
         (mixxx_midi_0,'.*VirMIDI.*-0$',),
-        (numark_midi_0,'.*Party Mix MKII MIDI 1.*',),
+        (numark_midi_pmv3_0,'.*Party Mix III MIDI 1.*',),
+        (numark_midi_pmv2_0,'.*Party Mix MKII MIDI 1.*',),
+        (um2_midi_1,'.*UM-2 MIDI 1.*',),
+        (um2_midi_2,'.*UM-2 MIDI 2.*',),
     ],
 
     in_ports = [
@@ -84,25 +103,40 @@ config(
         (sd90_midi_1,  '.*SD-90 MIDI 1.*',),
         (sd90_midi_2,  '.*SD-90 MIDI 2.*',),
         (behringer,    '.*UMC204HD 192k MIDI 1.*'),
-        (mpk_port_a,   '.*MPK249 Port A.*',),
-        (mpk_port_b,   '.*MPK249 Port B.*',),
-        (mpk_midi,     '.*MPK249 MIDI.*',),
-        (mpk_remote,   '.*MPK249 Remote.*',),
+        (mpk249_port_a,   '.*MPK249 Port A.*',),
+        (mpk249_port_b,   '.*MPK249 Port B.*',),
+        (mpk249_midi,     '.*MPK249 MIDI.*',),
+        (mpk249_remote,   '.*MPK249 Remote.*',),
+        (mpk261_port_a,   '.*MPK261 Port A.*',),
+        (mpk261_port_b,   '.*MPK261 Port B.*',),
+        (mpk261_midi,     '.*MPK261 MIDI.*',),
+        (mpk261_remote,   '.*MPK261 Remote.*',),
         (gt1000_midi_1,'.*GT-1000 MIDI 1.*',),
         (gt1000_midi_2,'.*GT-1000 MIDI 2.*',),
         (mixxx_midi_0,'.*VirMIDI.*-0$',),
-        (numark_midi_0,'.*Party Mix MKII MIDI 1.*',),
+        (numark_midi_pmv3_0,'.*Party Mix III MIDI 1.*',),
+        (numark_midi_pmv2_0,'.*Party Mix MKII MIDI 1.*',),
+        (um2_midi_1,'.*UM-2 MIDI 1.*',),
     ],
 )
         
 hook(
     OSCInterface(),
-    MemorizeScene(".hook.memorize_scene")
+    MemorizeScene("/tmp/hook.memorize_scene"),
+    AutoRestart(filenames=["includes/scenes.py",
+                           "includes/controls.py",
+                           "includes/functions/hook.py",
+                           "includes/functions/run.py"])
 )
-        # --------------------------------------------------------------------
+            
+# --------------------------------------------------------------------
 # Helper functions available for patches and controllers
 # --------------------------------------------------------------------
 
+with open("config.json") as FILE:
+    config = json.load(FILE)
+    
+    
 # Glissando -------------------------------------------------------------------------------------------
 
 def glissando_process(ev, from_note, to_note, vel, duration, direction, port, on):
@@ -181,14 +215,20 @@ def OnDebug(ev):
 
 # ---------------------------------------------------------------------------------------------------------
 
+class Playlist:
+    def __init__(self):
+        pass
+    
+    def __call__(self, ev):
+        pass
         
 #
 # Pre-buit filters for patches
 #
 
-mpk_a_filter = PortFilter(mpk_port_a)
-mpk_b_filter = PortFilter(mpk_port_b)
-pk5_filter   = PortFilter(mpk_midi) >> ChannelFilter(3)
+mpk_a_filter = [PortFilter(mpk249_port_a), PortFilter(mpk261_port_a)]
+mpk_b_filter = [PortFilter(mpk249_port_b), PortFilter(mpk261_port_b)]
+pk5_filter   = [PortFilter(mpk249_midi), PortFilter(mpk261_midi)] >> ChannelFilter(3)
 
 # -------------------------------
 
@@ -468,21 +508,17 @@ SD90_Initialize = [
 # This device has 4 banks, each bank contains 50 programs 
 #
 
-gt1k_port = "mpk_midi"
+gt1k_port = "mpk249_midi"
 
 # Internal Midi channel configured in the gt1k USB options
-gt1k_channel = 9
+gt1k_listen_channel = 9
 
-gt1kBankSelector = CtrlValueFilter(0, 4) >> [
-      Ctrl(gt1k_port, gt1k_channel, EVENT_CTRL, EVENT_VALUE), 
-      Ctrl(gt1k_port, gt1k_channel, 32, 0),
-]
-gt1kBank1 = Ctrl(0, 0) >> gt1kBankSelector
-gt1kBank2 = Ctrl(0, 1) >> gt1kBankSelector
-gt1kBank3 = Ctrl(0, 2) >> gt1kBankSelector
-gt1kBank4 = Ctrl(0, 3) >> gt1kBankSelector
+gt1k = CtrlSplit({
+    55 : [Print("OK"),Ctrl(gt1k_port, gt1k_listen_channel, 1, EVENT_VALUE)],
+})
 
-gt1kProgramSelector = Program(gt1k_port, channel = gt1k_channel, program = EVENT_VALUE)
+
+
 
         
 '''
@@ -840,7 +876,7 @@ cw_trigger_value = 127
 cw_channel = 1
 
 # Output port
-cw_port = sd90_midi_2
+cw_port = um2_midi_2
 
 # ---------------
 
@@ -1019,7 +1055,7 @@ limelight =  Key('d#6') >> Output(sd90_port_a, channel=16, program=(Special1,12)
 
 # Init patch 
 i_centurion = [
-        Call(Playlist()), 
+        Pass(), 
 ]
 
 # Execution patch
@@ -1132,7 +1168,7 @@ p_muse_stockholm = pk5_filter >> [
 p_rush = p_pk5ctrl_generic >> p_base
 
 p_wonderland_init = [
-    Ctrl(mpk_port_a, 3, 2, 64) >> ui_standard_stereo_fx,
+    Ctrl(mpk249_port_a, 3, 2, 64) >> ui_standard_stereo_fx,
 ]
 p_wonderland = p_pk5ctrl_generic >> [
      p_base,
@@ -1163,33 +1199,30 @@ restless_natives = [
 # Glissando
 p_glissando=(Filter(NOTEON) >> Call(glissando, 48, 84, 100, 0.01, -1, sd90_port_a))
 
+p_grand_designs_mando = [
+    (CtrlFilter(89) >> CakePlay),
+    (CtrlFilter(90) >> CakeRecord),
+    (CtrlFilter(81) >> Port(mpk249_midi)),
+]
         
 '''
 Patches to control somes /extensions/ modules
 Those modules are callable objects (__call__)
 '''
 
-# VLC player - Singleton
-VLC_BASE = Filter(NOTEON) >> Call(VlcPlayer())
+terminal = TerminalUI()
+manager = PlaylistManager(terminal)
 
-# Playlist
-VLC_PL   = NoteOn(EVENT_DATA1, 0) >> VLC_BASE
+# AUDIO_DEVICE multiple instances allow me to play sounds in parallal (dmix)
+mpv_config = config.get("mpv").get("socket")
+AUDIO_DEVICE_SD90_A = Call(MpvAdapter(mpv_config.get("SD90_A"), manager.playlist, terminal))
+AUDIO_DEVICE_SD90_B = Call(MpvAdapter(mpv_config.get("SD90_B"), manager.playlist, terminal))
+AUDIO_DEVICE_U192k  = Call(MpvAdapter(mpv_config.get("U192k"), manager.playlist, terminal))
 
-# Commands
-VLC_STOP  = NoteOn(37, 0) >> VLC_BASE
-VLC_PLAY  = NoteOn(39, 0) >> VLC_BASE
-VLC_PAUSE = NoteOn(44, 0) >> VLC_BASE
-VLC_REPEAT_ON     = NoteOn(43, 0)  >> VLC_BASE
-VLC_REPEAT_OFF    = NoteOn(45, 0)  >> VLC_BASE
-VLC_TOGGLE_LOOP   = NoteOn(127, 0) >> VLC_BASE
-VLC_TOGGLE_REPEAT = NoteOn(126, 0) >> VLC_BASE
-
-# MPG123 multiple instances allow me to play sounds in parallal (dmix)
-MPG123_U192k  = Call(Mp3Player("U192k"))
-MPG123_SD90_A = Call(Mp3Player("SD90"))
-MPG123_SD90_B = Call(Mp3Player("SD90"))
 # Playlist according to current scene, a singleton is enough
-MPG123_PLAYLIST = Call(Playlist())
+PLAYLIST_MANAGER = Call(manager)
+
+terminal.start()
 
         
 global_init = [
@@ -1197,34 +1230,25 @@ global_init = [
 ]
 
 _scenes = {
-    1: Scene("Initialize", init_patch=global_init, patch=Discard()),
-    2: SceneGroup(
+    10: Scene("Initialize", init_patch=global_init, patch=Discard()),
+    20: SceneGroup(
         "Rush",
         [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Generic", init_patch=MPG123_PLAYLIST, patch=Discard() // p_rush),
-            Scene(
-                "Subdivisions",
-                init_patch=[Call(GT1KPreset("U10-2")), MPG123_PLAYLIST],
-                patch=Discard(),
-            ),
-            Scene(
-                "TheTrees",
-                init_patch=[Call(GT1KPreset("U10-3")), MPG123_PLAYLIST],
-                patch=p_rush_trees,
-            ),
+            Scene("Select a Subscene", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+            Scene("Generic", patch=Discard() // p_rush),
+            Scene("Subdivisions",init_patch=Call(GT1KPreset("U10-2")),patch=Discard()),
+            Scene("TheTrees",init_patch=Call(GT1KPreset("U10-3")),patch=p_rush_trees),
             Scene("Grand Designs", init_patch=Call(GT1KPreset("U10-1")), patch=Discard()),
+            Scene("Grand Designs Mando", init_patch=Call(GT1KPreset("U10-4")), patch=p_grand_designs_mando),
             Scene("Marathon", init_patch=i_rush, patch=Discard()),
-            Scene("YYZ", init_patch=i_rush // MPG123_PLAYLIST, patch=p_rush),
-            Scene("Limelight", init_patch=i_rush // MPG123_PLAYLIST, patch=p_rush),
-            Scene("FlyByNight", init_patch=i_rush // MPG123_PLAYLIST, patch=p_rush),
-            Scene("RedBarchetta", init_patch=i_rush // MPG123_PLAYLIST, patch=p_rush),
-            Scene("Freewill", init_patch=i_rush // MPG123_PLAYLIST, patch=p_rush),
-            Scene("SpritOfRadio", init_patch=i_rush // MPG123_PLAYLIST, patch=p_rush),
-            Scene("TomSawyer", init_patch=i_rush // MPG123_PLAYLIST, patch=p_rush),
-            Scene(
-                "CloserToTheHeart", init_patch=i_rush // MPG123_PLAYLIST, patch=p_rush
-            ),
+            Scene("YYZ", init_patch=i_rush, patch=p_rush),
+            Scene("Limelight", init_patch=i_rush, patch=p_rush),
+            Scene("FlyByNight", init_patch=i_rush, patch=p_rush),
+            Scene("RedBarchetta", init_patch=i_rush, patch=p_rush),
+            Scene("Freewill", init_patch=i_rush, patch=p_rush),
+            Scene("SpritOfRadio", init_patch=i_rush, patch=p_rush),
+            Scene("TomSawyer", init_patch=i_rush, patch=p_rush),
+            Scene("CloserToTheHeart", init_patch=i_rush, patch=p_rush            ),
             Scene(
                 "RedBarchetta",
                 init_patch=i_rush,
@@ -1297,34 +1321,19 @@ _scenes = {
             #         })),
         ],
     ),
-    3: SceneGroup(
-        "BassCover",
-        [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Default", init_patch=MPG123_PLAYLIST, patch=Discard()),
-            Scene("Queen", init_patch=MPG123_PLAYLIST, patch=Discard()),
-            Scene("T4F", init_patch=MPG123_PLAYLIST, patch=Discard()),
-            Scene("Toto", init_patch=MPG123_PLAYLIST, patch=Discard()),
-        ],
-    ),
-    4: SceneGroup(
-        "Not assigned",
-        [
-            Scene("", init_patch=Discard(), patch=Discard()),
-        ],
-    ),
-    5: SceneGroup(
+    30: Scene("BassCover",init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    50: SceneGroup(
         "BigCountry",
         [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
+            Scene("Select a Subscene", init_patch=PLAYLIST_MANAGER, patch=Discard()),
             Scene(
                 "BassCover",
-                init_patch=MPG123_PLAYLIST // Call(GT1KPreset("U47-1")),
+                init_patch=Call(GT1KPreset("U47-1")),
                 patch=Discard(),
             ),
             Scene("InBigCountry", init_patch=i_big_country, patch=p_big_country),
             Scene("HighlandScenery", init_patch=Discard(), patch=p_highland_scenery),
-            Scene("Inwards", init_patch=Discard(), patch=p_pk5ctrl_generic >> p_base),
+            Scene("Inwards", init_patch=Call(GT1KPreset("U08-5")), patch=Port(mpk249_midi)),
             Scene("AnglePark", init_patch=Discard(), patch=p_pk5ctrl_generic >> p_base),
             Scene("Wonderland", init_patch=Call(GT1KPreset("U09-5")), patch=Discard()),
             Scene(
@@ -1341,15 +1350,7 @@ _scenes = {
             Scene("PeaceInOurTime (guit)", init_patch=Call(GT1KPreset("U09-1")), patch=Discard()),
         ],
     ),
-    6: SceneGroup(
-        "GrandDesignsStudio",
-        [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("PowerWindows", init_patch=MPG123_PLAYLIST, patch=p_rush_gd_demo),
-            Scene("Futur", init_patch=Discard(), patch=p_transport),
-        ],
-    ),
-    7: SceneGroup(
+    70: SceneGroup(
         "Keyboard",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
@@ -1382,13 +1383,13 @@ _scenes = {
             Scene("NatureSound", akai_pad_nature),
         ],
     ),
-    8: SceneGroup(
+    80: SceneGroup(
         "Cakewalk",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Play", init_patch=CakePlay, patch=Discard()),
+            Scene("Play", init_patch=CakePlay, patch=CtrlFilter(89) >> CakePlay),
             Scene("Stop", init_patch=CakeStop, patch=Discard()),
-            Scene("Record", init_patch=CakeRecord, patch=Discard()),
+            Scene("Record", init_patch=CakeRecord, patch=CtrlFilter(90) >> CakeRecord),
             Scene("Rewind", init_patch=CakeRewind, patch=Discard()),
             Scene("Forward", init_patch=CakeForward, patch=Discard()),
             Scene(
@@ -1398,21 +1399,15 @@ _scenes = {
             ),
         ],
     ),
-    9: SceneGroup(
-        "MP3Player",
-        [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Hits", init_patch=MPG123_PLAYLIST, patch=Discard()),
-            Scene("Middleage", init_patch=MPG123_PLAYLIST, patch=Discard()),
-            Scene("TV", init_patch=MPG123_PLAYLIST, patch=Discard()),
-            Scene("NinaHagen", init_patch=MPG123_PLAYLIST, patch=Discard()),
-            Scene("PowerWindows", init_patch=MPG123_PLAYLIST, patch=Discard()),
-            Scene("GraceUnderPressure", init_patch=MPG123_PLAYLIST, patch=Discard()),
-            Scene("SteveMorse", init_patch=MPG123_PLAYLIST, patch=Discard()),
-            Scene("Colocs", init_patch=MPG123_PLAYLIST, patch=Discard()),
-        ],
-    ),
-    10: SceneGroup(
+    90: Scene("Hits", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    91: Scene("Middleage", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    92: Scene("TV", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    93: Scene("NinaHagen", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    94: Scene("PowerWindows", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    95: Scene("GraceUnderPressure", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    96: Scene("SteveMorse", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    97: Scene("Colocs", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    100: SceneGroup(
         "Spotify",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
@@ -1453,7 +1448,7 @@ _scenes = {
             ),
         ],
     ),
-    11: SceneGroup(
+    110: SceneGroup(
         "HUE",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
@@ -1468,9 +1463,17 @@ _scenes = {
             Scene("Cuisine.Minimal", init_patch=HueCuisine, patch=Discard()),
             Scene("Chambre.Minimal", init_patch=HueChambreMaitre, patch=Discard()),
             Scene("AllOff", init_patch=HueAllOff, patch=Discard()),
-            Scene(
+
+        ],
+    ),
+    120: SceneGroup(
+        "SoundcraftUI",
+        [
+            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
+            Scene("Record", init_patch=ui_rectoggle, patch=Discard()),
+                        Scene(
                 "OneSliderMix",
-                init_patch=Call(Playlist()),
+                init_patch=Discard(),
                 patch=[
                     Filter(NOTEON | NOTEOFF)
                     >> KeyFilter(notes=[62])
@@ -1487,7 +1490,7 @@ _scenes = {
             ),
             Scene(
                 "MultiSlidersMix",
-                init_patch=Call(Playlist()),
+                init_patch=Discard(),
                 patch=Filter(CTRL)
                 >> CtrlFilter(1, 7)
                 >> [
@@ -1504,7 +1507,7 @@ _scenes = {
             ),
             Scene(
                 "ToggleMute",
-                init_patch=Call(Playlist()),
+                init_patch=Discard(),
                 patch=[
                     Filter(NOTEON) >> SendOSC(56420, "/mute", 0, 1),
                     Filter(NOTEON) >> SendOSC(56420, "/mute", 1, 1),
@@ -1514,14 +1517,7 @@ _scenes = {
             ),
         ],
     ),
-    12: SceneGroup(
-        "SoundcraftUI",
-        [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Record", init_patch=ui_rectoggle, patch=Discard()),
-        ],
-    ),
-    13: SceneGroup(
+    130: SceneGroup(
         "SD90",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
@@ -1534,53 +1530,7 @@ _scenes = {
             Scene("Enhanced", init_patch=ENHANC, patch=Discard()),
         ],
     ),
-    14: SceneGroup(
-        "MUSE",
-        [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Assassin", init_patch=Discard(), patch=p_muse),
-            Scene("Hysteria", init_patch=Discard(), patch=p_muse),
-            Scene("Cydonia", init_patch=Discard(), patch=p_muse),
-            Scene("Starlight", init_patch=Discard(), patch=p_muse),
-            Scene("Stockholm", init_patch=Discard(), patch=[p_muse_stockholm, p_muse]),
-        ],
-    ),
-    15: SceneGroup(
-        "Sampler",
-        [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Track1", init_patch=Discard(), patch=Discard()),
-        ],
-    ),
-    16: SceneGroup(
-        "POC",
-        [
-            Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene(
-                "INTERLUDE",
-                patch=pk5_filter >> Filter(NOTEON) >> NoteOn(0, 0) >> VLC_PL,
-                init_patch=Pass(),
-            ),
-        ],
-    ),
-    17: SceneGroup(
-        "VLC",
-        [
-            Scene("Select a command", init_patch=Discard(), patch=Discard()),
-            Scene("Stop", init_patch=VLC_STOP, patch=Discard()),
-            Scene("Play", init_patch=VLC_PLAY, patch=Discard()),
-            Scene("Pause", init_patch=VLC_PAUSE, patch=Discard()),
-            Scene("Repeat-ON", init_patch=VLC_REPEAT_ON, patch=Pass()),
-            Scene("Repeat-OFF", init_patch=VLC_REPEAT_OFF, patch=Pass()),
-            Scene("Toggle-Loop", init_patch=VLC_TOGGLE_LOOP, patch=Pass()),
-            Scene("Toggle-Repeat", init_patch=VLC_TOGGLE_REPEAT, patch=Pass()),
-            Scene(
-                "Playlist item 1", init_patch=NoteOn(0, 0) >> VLC_PL, patch=Discard()
-            ),
-            Scene("Playlist item 2", init_patch=Ctrl(1, 0) >> VLC_PL, patch=Discard()),
-        ],
-    ),
-    18: SceneGroup(
+    180: SceneGroup(
         "GT1K",
         [
             Scene("Select GT1K patch", init_patch=Discard(), patch=Discard()),
@@ -1589,6 +1539,9 @@ _scenes = {
             Scene("P01-3", init_patch=Call(GT1KPreset("P01-3")), patch=Discard()),
             Scene("P26-3", init_patch=Call(GT1KPreset("P26-3")), patch=Discard()),
             Scene("U47-1", init_patch=Call(GT1KPreset("U47-1")), patch=Discard()),
+            Scene("Num1OnInit",  init_patch=Ctrl(mpk249_midi, 9, 1, 127), patch=Discard()),
+            Scene("Num1OffInit",  init_patch=Ctrl(mpk249_midi, 9, 1, 0), patch=Discard()),
+            Scene("FCBNUM1",  init_patch=Discard(), patch=Port(mpk249_midi)),
         ],
     ),
 }
@@ -1598,15 +1551,16 @@ _scenes = {
 # Patches for the run().control patch
 #
 
-# Transport filter Filter for MPG123 and Spotipy and VLC
+# Transport filter
 jump_filter    = CtrlFilter(1)  >> CtrlValueFilter(0, 121)
 volume_filter  = CtrlFilter(7)  >> CtrlValueFilter(0, 101)
-trigger_filter = Filter(NOTEON) >> Transpose(-36)
+# TODO: Adjust Transpose for the MPK249 later (-36) and MPK261 (-24) to match the correct note range for triggering samples
+trigger_filter = Filter(NOTEON) >> Transpose(-24)
 transport_filter = [jump_filter, volume_filter, trigger_filter]
 
-mpg123_controller_1 = transport_filter >> MPG123_SD90_A
-mpg123_controller_2 = transport_filter >> MPG123_SD90_B
-vlc_controller_1 = trigger_filter >> VLC_BASE
+mpv_controller_sd90_a = transport_filter >> AUDIO_DEVICE_SD90_A
+mpv_controller_sd90_b = transport_filter >> AUDIO_DEVICE_SD90_B
+mpv_controller_u192k = transport_filter >> AUDIO_DEVICE_U192k
 
 sd90_controller = Port(sd90_port_a) >> [ 
     CtrlFilter(0) >> WaveLevel,
@@ -1629,26 +1583,32 @@ soundcraft_controller=Filter(CTRL|NOTE) >> [
         Filter(NOTE) >> NoteOn(EVENT_NOTE, 127) >> Port(midimix_midi),
     ] >> soundcraft_control
 
+# Common controller for MPK249 and MPK261
+mpk_249_261_controller =  ChannelSplit({
+         1 : CakewalkController,
+         2 : mpv_controller_u192k,
+         4 : mpv_controller_sd90_b,
+         8 : mpv_controller_sd90_a,
+        13 : p_hue,
+        14: sd90_controller,
+    })
 
 # Midi input control patch
 control_patch = PortSplit({
     midimix_midi : soundcraft_control,
-    mpk_midi : ChannelSplit({
-        4 : mpg123_controller_2,
+    mpk249_midi : ChannelSplit({
+        4 : mpv_controller_sd90_b,
     }),
-    mpk_port_a : ChannelSplit({
-         1 : CakewalkController,
-         8 : mpg123_controller_1,
-         4 : mpg123_controller_2,
-        12 : vlc_controller_1,
-        13 : p_hue,
-        14: sd90_controller,
+    mpk261_midi : ChannelSplit({
+        4 : mpv_controller_sd90_b,
     }),
-    mpk_port_b : ChannelSplit({
+    mpk249_port_a : mpk_249_261_controller,
+    mpk261_port_a : mpk_249_261_controller,
+    mpk249_port_b : ChannelSplit({
          1 : Program(sd90_port_a, EVENT_CHANNEL, EVENT_VALUE),
          2 : Channel(1) >> Port(mixxx_midi_0),
-         8 : mpg123_controller_1,
-         4 : mpg123_controller_2,
+         8 : mpv_controller_sd90_a,
+         4 : mpv_controller_sd90_b,
     }),
 
     sd90_midi_1 : Pass(),
@@ -1656,11 +1616,16 @@ control_patch = PortSplit({
     behringer   : Pass(),
     
     # Direct routing of the Numark to the virtual port used by Mixxx
-    numark_midi_0 : Port(mixxx_midi_0)  
+    numark_midi_pmv3_0 : Port(mixxx_midi_0),
+    numark_midi_pmv2_0 : Port(mixxx_midi_0),
+    um2_midi_1 : ChannelSplit({
+        15 : gt1k,
+    }),
+
 })
 
         
-pre  = ~Filter(SYSRT_CLOCK) >> ~ChannelFilter(8, 9, 11, 13) 
+pre  = ~Filter(SYSRT_CLOCK) >> ~ChannelFilter(8, 9, 11, 13, 15) 
 post = Pass()
 
 run(
