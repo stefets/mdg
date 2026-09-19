@@ -26,3 +26,4 @@ from extensions.philips import *
 from extensions.spotify import *
 from extensions.midimix import *
 from extensions.gt1000 import GT1KPreset
+from ui.terminal import TerminalUI
