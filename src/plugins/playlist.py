@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from mididings.engine import scenes, current_scene
 
@@ -10,7 +11,7 @@ class PlaylistManager:
 
     def __call__(self, ev):
         scene = self.get_scene_name()
-        self.playlist.create(f"/media/soundlib/{scene}")
+        self.playlist.create(f"{os.environ['MEDIA_LIB']}/{scene}")
         self.terminal.refresh()
 
     def get_scene_name(self):
