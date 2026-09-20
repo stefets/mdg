@@ -24,12 +24,9 @@
 ## Dependencies
 * Mako
 ## Optionals dependencies
+* mpv
 * pyliblo3 
 * pyinotify
 * pyalsaaudio
-* vlc and python-vlc-http
-* mpv
-* python-dotenv
-* colorama
 * spotipy
 * phue

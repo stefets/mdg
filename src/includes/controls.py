@@ -12,7 +12,11 @@ transport_filter = [jump_filter, volume_filter, trigger_filter]
 
 mpv_controller_sd90_a = transport_filter >> AUDIO_DEVICE_SD90_A
 mpv_controller_sd90_b = transport_filter >> AUDIO_DEVICE_SD90_B
-mpv_controller_u192k = transport_filter >> AUDIO_DEVICE_U192k
+mpv_controller_sd90_video = transport_filter >> AUDIO_DEVICE_SD90_VIDEO
+mpv_controller_u192k_a = transport_filter >> AUDIO_DEVICE_U192k_A
+mpv_controller_u192k_b = transport_filter >> AUDIO_DEVICE_U192k_B
+mpv_controller_u192k_video = transport_filter >> AUDIO_DEVICE_U192k_VIDEO
+mpv_controller_video = transport_filter >> VIDEO
 
 sd90_controller = Port(sd90_port_a) >> [ 
     CtrlFilter(0) >> WaveLevel,
@@ -38,9 +42,13 @@ soundcraft_controller=Filter(CTRL|NOTE) >> [
 # Common controller for MPK249 and MPK261
 mpk_249_261_controller =  ChannelSplit({
          1 : CakewalkController,
-         2 : mpv_controller_u192k,
-         4 : mpv_controller_sd90_b,
-         8 : mpv_controller_sd90_a,
+         2 : mpv_controller_u192k_a,
+         3 : mpv_controller_u192k_b,
+         4 : mpv_controller_u192k_video,
+         5 : mpv_controller_sd90_a,
+         6 : mpv_controller_sd90_b,
+         7 : mpv_controller_sd90_video,
+         8 : mpv_controller_video,
         13 : p_hue,
         14: sd90_controller,
     })
