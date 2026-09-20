@@ -1,13 +1,28 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 
+        
 '''
+My mididings script with plugins
+
+Plugins:
+- mpv : to start audio or video files from my controller, mpv use the plugin playlist
+- playlist : scan media files in a directory and keep the list of files in an array
+- midimix : to control the state of the leds
+- gt1000 : to change bank on a BOSS GT-1000
+- hd500 : to change bank on a LINE6 HD500
+- philips : to control Philips Hue lights and scenes
+- spotify : to control Spotify playlist
+
 Thanks to the programmer Dominic Sacré for that unbeatable MIDI engine - a true masterpiece
 
 https://github.com/mididings/mididings (Community version! My prayers have been answered)
 '''
-
         
+#
+# Import section
+#
+
 import os
 import sys
 import json
@@ -30,12 +45,16 @@ load_dotenv()
 # Extensions
 from adapters.mpv import MpvAdapter
 from plugins.playlist import PlaylistManager
-from extensions.philips import *
-from extensions.spotify import *
-from extensions.midimix import *
-from extensions.gt1000 import GT1KPreset
+from plugins.philips import *
+from plugins.spotify import *
+from plugins.midimix import *
+from plugins.gt1000 import GT1KPreset
 from ui.terminal import TerminalUI
         
+#
+# Config section
+#
+
 midimix_midi = "midimix"
 
 behringer    = "behringer"
@@ -120,6 +139,10 @@ config(
     ],
 )
         
+#
+# Hook section
+#
+
 hook(
     OSCInterface(),
     MemorizeScene("/tmp/hook.memorize_scene"),
@@ -151,45 +174,6 @@ def glissando(ev, from_note, to_note, vel, duration, direction, port):
 
 # -------------------------------------------------------------------------------------------
 
-def NavigateToScene(ev):
-    ''' 
-    Navigate through Scenes and Sub-Scenes
-    
-    MIDIDINGS does not wrap in the builtin ScenesSwitch but SubSecenesSwitch yes with the wrap parameter
-    
-    With that function, you can wrap trough Scenes AND SubScenes
-    
-    That function assume that the first SceneNumber is 1
-    '''
-    if ev.ctrl == 20:
-        nb_scenes = len(scenes())
-        cs = current_scene()
-        # Scene backward
-        if ev.value == 1:
-            if cs > 1:
-                switch_scene(cs - 1)
-            # Scene forward and wrap
-        elif ev.value == 2:
-            if cs < nb_scenes:
-                switch_scene(cs + 1)
-            else:
-                switch_scene(1)
-            # SubScene backward
-        elif ev.value == 3:
-            css = current_subscene()
-            if css > 1:
-                switch_subscene(css - 1)
-            # SubScene forward and wrap
-        elif ev.value == 4:
-            css = current_subscene()
-            nb_subscenes = len(scenes()[cs][1])
-            if nb_subscenes > 0 and css < nb_subscenes:
-                switch_subscene(css + 1)
-            else:
-                switch_subscene(1)
-
-# ---------------------------------------------------------------------------------------------------------
-
 # Create a pitchbend from a filter logic
 # Params : direction when 1 bend goes UP, when -1 bend goes down
 #          dont set direction with other values than 1 or -1 dude !
@@ -210,17 +194,6 @@ def setenv(ev, key, value):
 
 # ---------------------------------------------------------------------------------------------------------
 
-def OnDebug(ev):
-    print(ev)
-
-# ---------------------------------------------------------------------------------------------------------
-
-class Playlist:
-    def __init__(self):
-        pass
-    
-    def __call__(self, ev):
-        pass
         
 #
 # Pre-buit filters for patches
@@ -501,24 +474,6 @@ SD90_Initialize = [
     AfxOn, 
     InitPitchBend, 
 ]
-
-        
-#
-# The Boss GT-1000 definition file for mididings
-# This device has 4 banks, each bank contains 50 programs 
-#
-
-gt1k_port = "mpk249_midi"
-
-# Internal Midi channel configured in the gt1k USB options
-gt1k_listen_channel = 9
-
-gt1k = CtrlSplit({
-    55 : [Print("OK"),Ctrl(gt1k_port, gt1k_listen_channel, 1, EVENT_VALUE)],
-})
-
-
-
 
         
 '''
@@ -1213,11 +1168,17 @@ Those modules are callable objects (__call__)
 terminal = TerminalUI()
 manager = PlaylistManager(terminal)
 
-# AUDIO_DEVICE multiple instances allow me to play sounds in parallal (dmix)
+# MPV adapters for audio and video devices, using the socket paths from the config
 mpv_config = config.get("mpv").get("socket")
 AUDIO_DEVICE_SD90_A = Call(MpvAdapter(mpv_config.get("SD90_A"), manager.playlist, terminal))
 AUDIO_DEVICE_SD90_B = Call(MpvAdapter(mpv_config.get("SD90_B"), manager.playlist, terminal))
-AUDIO_DEVICE_U192k  = Call(MpvAdapter(mpv_config.get("U192k"), manager.playlist, terminal))
+AUDIO_DEVICE_SD90_VIDEO  = Call(MpvAdapter(mpv_config.get("SD90_VIDEO"), manager.playlist, terminal))
+
+AUDIO_DEVICE_U192k_A  = Call(MpvAdapter(mpv_config.get("U192k_A"), manager.playlist, terminal))
+AUDIO_DEVICE_U192k_B  = Call(MpvAdapter(mpv_config.get("U192k_B"), manager.playlist, terminal))
+AUDIO_DEVICE_U192k_VIDEO  = Call(MpvAdapter(mpv_config.get("U192k_VIDEO"), manager.playlist, terminal))
+
+VIDEO = Call(MpvAdapter(mpv_config.get("VIDEO"), manager.playlist, terminal))
 
 # Playlist according to current scene, a singleton is enough
 PLAYLIST_MANAGER = Call(manager)
@@ -1560,7 +1521,11 @@ transport_filter = [jump_filter, volume_filter, trigger_filter]
 
 mpv_controller_sd90_a = transport_filter >> AUDIO_DEVICE_SD90_A
 mpv_controller_sd90_b = transport_filter >> AUDIO_DEVICE_SD90_B
-mpv_controller_u192k = transport_filter >> AUDIO_DEVICE_U192k
+mpv_controller_sd90_video = transport_filter >> AUDIO_DEVICE_SD90_VIDEO
+mpv_controller_u192k_a = transport_filter >> AUDIO_DEVICE_U192k_A
+mpv_controller_u192k_b = transport_filter >> AUDIO_DEVICE_U192k_B
+mpv_controller_u192k_video = transport_filter >> AUDIO_DEVICE_U192k_VIDEO
+mpv_controller_video = transport_filter >> VIDEO
 
 sd90_controller = Port(sd90_port_a) >> [ 
     CtrlFilter(0) >> WaveLevel,
@@ -1586,9 +1551,13 @@ soundcraft_controller=Filter(CTRL|NOTE) >> [
 # Common controller for MPK249 and MPK261
 mpk_249_261_controller =  ChannelSplit({
          1 : CakewalkController,
-         2 : mpv_controller_u192k,
-         4 : mpv_controller_sd90_b,
-         8 : mpv_controller_sd90_a,
+         2 : mpv_controller_u192k_a,
+         3 : mpv_controller_u192k_b,
+         4 : mpv_controller_u192k_video,
+         5 : mpv_controller_sd90_a,
+         6 : mpv_controller_sd90_b,
+         7 : mpv_controller_sd90_video,
+         8 : mpv_controller_video,
         13 : p_hue,
         14: sd90_controller,
     })
@@ -1618,13 +1587,14 @@ control_patch = PortSplit({
     # Direct routing of the Numark to the virtual port used by Mixxx
     numark_midi_pmv3_0 : Port(mixxx_midi_0),
     numark_midi_pmv2_0 : Port(mixxx_midi_0),
-    um2_midi_1 : ChannelSplit({
-        15 : gt1k,
-    }),
 
 })
 
         
+#
+# Run section
+#
+
 pre  = ~Filter(SYSRT_CLOCK) >> ~ChannelFilter(8, 9, 11, 13, 15) 
 post = Pass()
 
