@@ -1,3 +1,36 @@
+## [0.2.1] - 2026-09-20
+
+### 🚜 Refactor
+
+- Remove VLC in favor of MPV  #139
+- Remove unused scenes
+- Update MPV configuration and control mappings for audio and video devices
+
+### 📚 Documentation
+
+- Update full script example
+## [0.2.0] - 2026-09-19
+
+### 🚀 Features
+
+- *(rich)* Add  base code prototype #140
+- Connect MPV adapters with rich terminal
+- Inject the terminal in the PlaylistManager
+- Print the Playlist song from the Terminal
+
+### 🚜 Refactor
+
+- Remove Terminal class
+- *(launch)* Kill mpv on start and add comments
+- Update controller names for MPV
+- Update terminal on every __call__
+- Remove the print of the songs from the PlaylistManager
+- Playlist changes
+- Adjust scenes for playlist generation at level 1
+
+### ⚙️ Miscellaneous Tasks
+
+- Update CHANGELOG for version 0.1.0 with new features, bug fixes, and refactoring details
 ## [0.1.0] - 2026-09-13
 
 ### 🚀 Features
