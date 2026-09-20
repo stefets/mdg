@@ -12,9 +12,9 @@
   * Then, it render to stdout a mididings script by replacing tokens in all Mako templates
 ## Includes
   * The src/includes contains files that will create the main body of the mididings script. The order of the files is important and it's defined in config.json.
-## Extensions
-  * The scr/extensions directory contains callable objects
-    * Those extensions allow my mididings configuration to control modules I need like :
+## Plugins
+  * The scr/plugins directory contains callable objects
+    * Those plugins allow my mididings configuration to control modules I need like :
       * mpv - in JSON IPC mode to play audio files
         * It can start an instance of mpv for each sound card, each instance of mpv can play multiple audio files in parallel, this is possible with an asoundrc configuration that sets my PCM devices as dmix type
       * Philips Hue - API allow the send requests to a Philips Hue Bridge
