@@ -23,9 +23,13 @@
     },
     "mpv": {
         "socket": {
-            "U192k": "/tmp/u192k.sock",
-            "SD90_A": "/tmp/sd90a.sock",
-            "SD90_B": "/tmp/sd90b.sock"
+            "U192k_A": "/tmp/u192k-a.sock",
+            "U192k_B": "/tmp/u192k-b.sock",
+            "U192k_VIDEO": "/tmp/u192k-video.sock",
+            "SD90_A": "/tmp/sd90-a.sock",
+            "SD90_B": "/tmp/sd90-b.sock",
+            "SD90_VIDEO": "/tmp/sd90-video.sock",
+            "VIDEO": "/tmp/video.sock"
         }
     }
 }
