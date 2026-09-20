@@ -19,7 +19,6 @@
         * It can start an instance of mpv for each sound card, each instance of mpv can play multiple audio files in parallel, this is possible with an asoundrc configuration that sets my PCM devices as dmix type
       * Philips Hue - API allow the send requests to a Philips Hue Bridge
       * Spotify - call their API to control a player
-      * VLC Server - Send HTTP requests to a VLC server
       * AKAI MIDIMIX - Helper to manage the switch state and the LED of the Akai MIDIMIX
 ## Dependencies
 * Mako
