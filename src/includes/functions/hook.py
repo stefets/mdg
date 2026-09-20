@@ -1,4 +1,8 @@
 
+#
+# Hook section
+#
+
 hook(
     OSCInterface(),
     MemorizeScene("/tmp/hook.memorize_scene"),

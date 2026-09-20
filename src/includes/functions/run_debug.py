@@ -1,4 +1,8 @@
 
+#
+# Run section for debugging
+#
+
 pre  = ~Filter(SYSRT_CLOCK) >> Print('input', portnames='in') 
 post = Print('output',portnames='out')
 

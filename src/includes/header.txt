@@ -1,0 +1,17 @@
+
+'''
+My mididings script with plugins
+
+Plugins:
+- mpv : to start audio or video files from my controller, mpv use the plugin playlist
+- playlist : scan media files in a directory and keep the list of files in an array
+- midimix : to control the state of the leds
+- gt1000 : to change bank on a BOSS GT-1000
+- hd500 : to change bank on a LINE6 HD500
+- philips : to control Philips Hue lights and scenes
+- spotify : to control Spotify playlist
+
+Thanks to the programmer Dominic Sacré for that unbeatable MIDI engine - a true masterpiece
+
+https://github.com/mididings/mididings (Community version! My prayers have been answered)
+'''

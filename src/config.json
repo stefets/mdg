@@ -1,5 +1,6 @@
 {
     "items": [
+        "includes/header.txt",
         "includes/imports.py",
         "includes/functions/config.py",
         "includes/functions/hook.py",
