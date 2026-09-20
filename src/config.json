@@ -6,7 +6,6 @@
         "includes/helpers.py",
         "includes/patches/filters.py",
         "includes/patches/sd90.py",
-        "includes/patches/gt1000.py",
         "includes/patches/soundcraft.py",
         "includes/patches/hue.py",
         "includes/patches/cakewalk.py",

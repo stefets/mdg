@@ -21,45 +21,6 @@ def glissando(ev, from_note, to_note, vel, duration, direction, port):
 
 # -------------------------------------------------------------------------------------------
 
-def NavigateToScene(ev):
-    ''' 
-    Navigate through Scenes and Sub-Scenes
-    
-    MIDIDINGS does not wrap in the builtin ScenesSwitch but SubSecenesSwitch yes with the wrap parameter
-    
-    With that function, you can wrap trough Scenes AND SubScenes
-    
-    That function assume that the first SceneNumber is 1
-    '''
-    if ev.ctrl == 20:
-        nb_scenes = len(scenes())
-        cs = current_scene()
-        # Scene backward
-        if ev.value == 1:
-            if cs > 1:
-                switch_scene(cs - 1)
-            # Scene forward and wrap
-        elif ev.value == 2:
-            if cs < nb_scenes:
-                switch_scene(cs + 1)
-            else:
-                switch_scene(1)
-            # SubScene backward
-        elif ev.value == 3:
-            css = current_subscene()
-            if css > 1:
-                switch_subscene(css - 1)
-            # SubScene forward and wrap
-        elif ev.value == 4:
-            css = current_subscene()
-            nb_subscenes = len(scenes()[cs][1])
-            if nb_subscenes > 0 and css < nb_subscenes:
-                switch_subscene(css + 1)
-            else:
-                switch_subscene(1)
-
-# ---------------------------------------------------------------------------------------------------------
-
 # Create a pitchbend from a filter logic
 # Params : direction when 1 bend goes UP, when -1 bend goes down
 #          dont set direction with other values than 1 or -1 dude !
@@ -79,15 +40,3 @@ def setenv(ev, key, value):
     os.environ[key] = value
 
 # ---------------------------------------------------------------------------------------------------------
-
-def OnDebug(ev):
-    print(ev)
-
-# ---------------------------------------------------------------------------------------------------------
-
-class Playlist:
-    def __init__(self):
-        pass
-    
-    def __call__(self, ev):
-        pass
