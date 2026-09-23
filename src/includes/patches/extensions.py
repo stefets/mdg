@@ -17,7 +17,7 @@ AUDIO_DEVICE_U192k_A  = Call(MpvAdapter(mpv_config.get("U192k_A"), manager.playl
 AUDIO_DEVICE_U192k_B  = Call(MpvAdapter(mpv_config.get("U192k_B"), manager.playlist, terminal))
 AUDIO_DEVICE_U192k_VIDEO  = Call(MpvAdapter(mpv_config.get("U192k_VIDEO"), manager.playlist, terminal))
 
-VIDEO = Call(MpvAdapter(mpv_config.get("VIDEO"), manager.playlist, terminal))
+MPV_VIDEO = Call(MpvAdapter(mpv_config.get("VIDEO"), manager.playlist, terminal))
 
 # Playlist according to current scene, a singleton is enough
 PLAYLIST_MANAGER = Call(manager)

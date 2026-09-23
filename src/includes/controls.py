@@ -6,17 +6,21 @@
 # Transport filter
 jump_filter    = CtrlFilter(1)  >> CtrlValueFilter(0, 121)
 volume_filter  = CtrlFilter(7)  >> CtrlValueFilter(0, 101)
-# TODO: Adjust Transpose for the MPK249 later (-36) and MPK261 (-24) to match the correct note range for triggering samples
-trigger_filter = Filter(NOTEON) >> Transpose(-24)
-transport_filter = [jump_filter, volume_filter, trigger_filter]
+transport_filter = [
+    jump_filter,
+    volume_filter, 
+    Filter(NOTEON)
+]
 
 mpv_controller_sd90_a = transport_filter >> AUDIO_DEVICE_SD90_A
 mpv_controller_sd90_b = transport_filter >> AUDIO_DEVICE_SD90_B
 mpv_controller_sd90_video = transport_filter >> AUDIO_DEVICE_SD90_VIDEO
+
 mpv_controller_u192k_a = transport_filter >> AUDIO_DEVICE_U192k_A
 mpv_controller_u192k_b = transport_filter >> AUDIO_DEVICE_U192k_B
 mpv_controller_u192k_video = transport_filter >> AUDIO_DEVICE_U192k_VIDEO
-mpv_controller_video = transport_filter >> VIDEO
+
+mpv_controller_video = transport_filter >> MPV_VIDEO
 
 sd90_controller = Port(sd90_port_a) >> [ 
     CtrlFilter(0) >> WaveLevel,
@@ -28,11 +32,11 @@ sd90_controller = Port(sd90_port_a) >> [
  ]
 
 # Spotify
-spotify_controller = [
-  trigger_filter,
-  volume_filter, 
-  CtrlFilter(44),
-] >> Call(SpotifyPlayer())
+# spotify_controller = [
+#   Filter(NOTEON),
+#   volume_filter, 
+#   CtrlFilter(44),
+# ] >> Call(SpotifyPlayer())
 
 soundcraft_controller=Filter(CTRL|NOTE) >> [
         Filter(CTRL) >> Pass(),
@@ -44,39 +48,60 @@ mpk_249_261_controller =  ChannelSplit({
          1 : CakewalkController,
          2 : mpv_controller_u192k_a,
          3 : mpv_controller_u192k_b,
-         4 : mpv_controller_u192k_video,
          5 : mpv_controller_sd90_a,
          6 : mpv_controller_sd90_b,
-         7 : mpv_controller_sd90_video,
-         8 : mpv_controller_video,
-        13 : p_hue,
         14: sd90_controller,
     })
 
 # Midi input control patch
 control_patch = PortSplit({
+
+    # Akai MIDIMIX
     midimix_midi : soundcraft_control,
-    mpk249_midi : ChannelSplit({
-        4 : mpv_controller_sd90_b,
-    }),
-    mpk261_midi : ChannelSplit({
-        4 : mpv_controller_sd90_b,
-    }),
-    mpk249_port_a : mpk_249_261_controller,
-    mpk261_port_a : mpk_249_261_controller,
+
+    # Akai MPK249 (DEVE/Backup)
+    # Port A
+    mpk249_port_a : Transpose(-36) >> mpk_249_261_controller,
+    # Port B (WIP)
     mpk249_port_b : ChannelSplit({
-         1 : Program(sd90_port_a, EVENT_CHANNEL, EVENT_VALUE),
-         2 : Channel(1) >> Port(mixxx_midi_0),
-         8 : mpv_controller_sd90_a,
-         4 : mpv_controller_sd90_b,
+        # Mapping of the MPK249 PADS BANK C
+        1 : mpv_controller_video,
+    }),  
+    # DIN Port
+    mpk249_midi : ChannelSplit({
+        # Roland PK5 connected to the MIDI IN of the MPK249
+        4 : Transpose(-36) >> mpv_controller_sd90_b,
     }),
 
-    sd90_midi_1 : Pass(),
-    sd90_midi_2 : Pass(),
-    behringer   : Pass(),
+    # Akai MPK261 (PROD)
+    # Port A
+    mpk261_port_a : Transpose(-24) >> mpk_249_261_controller,
+    # Port B
+    mpk261_port_b : ChannelSplit({
+        # Mapping of the MPK261 PADS BANK C
+        1 : mpv_controller_video,
+        2: p_hue,
+    }),
+    # DIN Port
+    mpk261_midi : ChannelSplit({
+        # Roland PK5 connected to the MIDI IN of the MPK249
+        4 : Transpose(-36) >> mpv_controller_sd90_b,
+    }),
     
-    # Direct routing of the Numark to the virtual port used by Mixxx
+    # Direct routing of the Numark controllers to the virtual port used by Mixxx
+    # This allow me to use other controllers in addition of the Numark controller to control Mixxx
     numark_midi_pmv3_0 : Port(mixxx_midi_0),
     numark_midi_pmv2_0 : Port(mixxx_midi_0),
 
+    # Suspended for analysis, not used in the current configuration
+    # mpk249_port_b : ChannelSplit({
+    #      1 : Program(sd90_port_a, EVENT_CHANNEL, EVENT_VALUE),
+    #      2 : Channel(1) >> Port(mixxx_midi_0),
+    #      8 : mpv_controller_sd90_a,
+    #      4 : mpv_controller_sd90_b,
+    # }),
+    # sd90_midi_1 : Pass(),
+    # sd90_midi_2 : Pass(),
+    # behringer   : Pass(),
+    
 })

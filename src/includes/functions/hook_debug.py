@@ -4,5 +4,6 @@
 #
 
 hook(
-    AutoRestart()
+    AutoRestart(),
+    MemorizeScene("/tmp/hook.debug-memorize-scene")
 )

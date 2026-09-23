@@ -24,7 +24,9 @@ class TerminalUI:
         adapter_table.add_column("MPV")
         adapter_table.add_column("Volume")
         adapter_table.add_column("Jump")
-        adapter_table.add_column("Auto-next")
+        adapter_table.add_column("Paused", justify="center")
+        adapter_table.add_column("Muted", justify="center")
+        adapter_table.add_column("Auto-next", justify="center")
         adapter_table.add_column("Song")
 
         for adapter in self.adapters:
@@ -32,7 +34,9 @@ class TerminalUI:
                 adapter.address,
                 f"{adapter.volume}%",
                 f"{adapter.jump_offset}s",
-                str(adapter.autonext),
+                self.indicator(adapter.paused, "yellow"),
+                self.indicator(adapter.muted, "red"),
+                self.indicator(adapter.autonext, "green"),
                 adapter.get_current_song() or "",
             )
 
@@ -50,7 +54,7 @@ class TerminalUI:
             for index, song in enumerate(songs, start=1):
                 playlist_table.add_row(
                     str(index),
-                    str(song),
+                    song.name,
                 )
 
         return Group(
@@ -72,3 +76,6 @@ class TerminalUI:
         self.live.update(
             self.render()
         )
+
+    def indicator(self, value, color):
+        return f"[{color}]●[/{color}]" if value else "[dim]○[/dim]"

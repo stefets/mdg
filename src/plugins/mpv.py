@@ -13,6 +13,7 @@ class MpvClient():
         if address is None:
             raise ValueError("IPC socket path must be provided")
         
+        
         self.socket = socket.socket(socket.AF_UNIX)
         self.socket.connect(address)
         
@@ -21,6 +22,12 @@ class MpvClient():
         self.responses = {}
         self.mpv_event_callback = mpv_event_callback
         
+        # The supported events are handled and passed to the callback function if provided
+        self.supported_event = [
+            "property-change",
+            "start-file",
+            "end-file",
+        ]
         # This thread will read from the socket and handle responses and events
         self._reader_thread = threading.Thread(
             target=self._read_socket,
@@ -35,9 +42,10 @@ class MpvClient():
         ).start()
         
         # Observable properties
-        self.command("observe_property", 1, "pause")
-        self.command("observe_property", 1, "mute")
         self.command("observe_property", 1, "volume")
+        self.command("observe_property", 2, "pause")
+        self.command("observe_property", 3 , "mute")
+        
 
     def command(self, *args):
         self.request_id += 1
@@ -102,13 +110,9 @@ class MpvClient():
             
     def handle_event(self, event):
         event_name = event.get("event")
-        if event_name == "property-change":
-            self.mpv_event_callback(event)
-        elif event_name == "end-file":
-            self.mpv_event_callback(event)
-        else:
-            # print(f"Unhandled event: {event}")
-            pass
+        if event_name in self.supported_event:
+            if self.mpv_event_callback:
+                self.mpv_event_callback(event)
 
     def set_property(self, property_name, value):
         self.command("set_property", property_name, value)
