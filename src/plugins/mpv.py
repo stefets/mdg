@@ -1,4 +1,3 @@
-import os
 import json
 import socket
 import threading
@@ -8,7 +7,7 @@ from queue import Queue
 This plugin allows communication with mpv player through socket.
 """
 
-class MpvClient():
+class MpvClient:
     def __init__(self, address: str, mpv_event_callback=None):
         if address is None:
             raise ValueError("IPC socket path must be provided")
@@ -27,6 +26,7 @@ class MpvClient():
             "property-change",
             "start-file",
             "end-file",
+            "loop-file"
         ]
         # This thread will read from the socket and handle responses and events
         self._reader_thread = threading.Thread(
@@ -45,6 +45,7 @@ class MpvClient():
         self.command("observe_property", 1, "volume")
         self.command("observe_property", 2, "pause")
         self.command("observe_property", 3 , "mute")
+        self.command("observe_property", 4 , "loop-file")
         
 
     def command(self, *args):
@@ -102,17 +103,15 @@ class MpvClient():
     def _process_events(self):
         while True:
             message = self.event_queue.get()
-
-            try:
-                self.handle_event(message)
-            except Exception as e:
-                print(f"MPV EVENT ERROR: {e}")
+            self.handle_event(message)
             
     def handle_event(self, event):
         event_name = event.get("event")
         if event_name in self.supported_event:
             if self.mpv_event_callback:
                 self.mpv_event_callback(event)
+            else:
+                pass
 
     def set_property(self, property_name, value):
         self.command("set_property", property_name, value)
@@ -147,4 +146,8 @@ class MpvClient():
 
     def volume(self, value):
         self.set_property("volume", value)
+        
+    def toggle_loop(self):
+        loop = self.get_property("loop-file")
+        self.set_property("loop-file", "no" if loop == "inf" else "inf")
         

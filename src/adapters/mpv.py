@@ -27,6 +27,7 @@ class MpvAdapter:
         self.paused = False
         self.muted = False
         self.volume = 100
+        self.loop = False
 
         # The MPV client instance
         self.mpv = MpvClient(address, self.mpv_event_callback)
@@ -36,7 +37,7 @@ class MpvAdapter:
         # Upper bound is exclusive
         self.note_range_mapping = RangeKeyDict(
             {
-                (0, 1): self.unassigned,
+                (0, 1): self.on_toggle_loop,
                 (1, 36): self.on_play,
                 (36, 41): self.navigate_scene,
                 (41, 48): self.navigate_player,
@@ -92,6 +93,8 @@ class MpvAdapter:
                 self.paused = message.get("data")
             elif message.get("name") == "mute":
                 self.muted = message.get("data")
+            elif message.get("name") == "loop-file":
+                self.loop = message.get("data") == "inf"
         elif event_name == "start-file":
             pass  # No action but need a refresh to update the terminal with the current song
         else:
@@ -111,6 +114,9 @@ class MpvAdapter:
     def unassigned(self, ev):
         pass
 
+    def on_toggle_loop(self, ev):
+        self.mpv.toggle_loop()
+    
     def enable_autonext(self, ev):
         self.set_autonext(True)
 
