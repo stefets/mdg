@@ -3,13 +3,20 @@
 # Patches for the run().control patch
 #
 
-# Transport filter
+# Transport filters
 jump_filter    = CtrlFilter(1)  >> CtrlValueFilter(0, 121)
+
+# 0 = Mute is False / 127 = Mute is True
+mute_filter    = CtrlFilter(2) >> [
+    CtrlValueFilter(0),
+    CtrlValueFilter(127)
+]
 volume_filter  = CtrlFilter(7)  >> CtrlValueFilter(0, 101)
 transport_filter = [
     jump_filter,
     volume_filter, 
-    Filter(NOTEON)
+    Filter(NOTEON),
+    mute_filter
 ]
 
 mpv_controller_sd90_a = transport_filter >> AUDIO_DEVICE_SD90_A
