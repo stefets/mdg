@@ -119,7 +119,7 @@ post = Print('output',portnames='out')
 run(
     control=Pass(),
     scenes = {
-        1 : Scene("Empty", init_patch=Discard(), patch=Discard()),
+        1 : Scene("Empty", init_patch=Discard(), patch=Pass()),
     },
     pre=pre,
     post=post,
