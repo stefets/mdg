@@ -7,6 +7,7 @@ from mididings.engine import (
     switch_subscene,
 )
 from range_key_dict import RangeKeyDict
+from plugins.transport import Direction
 
 from plugins.mpv import MpvClient
 
@@ -53,9 +54,9 @@ class MpvAdapter:
             39: self.next_subscene,
             40: self.next_scene,
             # White keys
-            41: self.rewind,
+            41: self.backward,
             43: self.toggle_autonext,
-            45: self.on_toggle_mute,
+            45: self.on_toggle_loop,
             47: self.forward,
             # Black keys
             42: self.prev_entry,
@@ -64,16 +65,15 @@ class MpvAdapter:
         }
 
         # Control change mapping
-        self.ctrl_range_mapping = RangeKeyDict(
-            {
-                (0, 2): self.set_offset,
-                (7, 8): self.set_volume,
+        self.ctrl_mapping = {
+                1: self.set_seek,
+                2: self.on_toggle_mute,
+                7: self.set_volume,
             }
-        )
 
     # call from mididings
     def __call__(self, ev):
-        self.ctrl_range_mapping[ev.data1](
+        self.ctrl_mapping[ev.data1](
             ev
         ) if ev.type == _constants.CTRL else self.note_range_mapping[ev.data1](ev)
 
@@ -138,12 +138,13 @@ class MpvAdapter:
         switch_scene(index)
 
     def next_scene(self, ev):
-        self.on_switch_scene(1)
+        self.on_switch_scene(Direction.Forward)
 
     def prev_scene(self, ev):
-        self.on_switch_scene(-1)
+        self.on_switch_scene(Direction.Backward)
 
-    def on_switch_scene(self, offset):
+    def on_switch_scene(self, direction):
+        offset = 1 if direction == Direction.Forward else -1
         keys = list(scenes().keys())
         index = keys.index(current_scene()) + offset
 
@@ -194,16 +195,21 @@ class MpvAdapter:
 
     def on_toggle_mute(self, ev):
         """Mute or UnMute if playing"""
-        self.mpv.toggle_mute()
+        if ev.data2 == 0:
+            self.mpv.unmute()
+        elif ev.data2 == 127:
+            self.mpv.mute()
+        else:
+            print(f"Invalid CC value [{ev.data2}] for mute/unmute.")
 
     def forward(self, ev):
-        self.on_seek(self.jump_offset)
+        self.on_seek(Direction.Forward)
 
-    def rewind(self, ev):
-        self.on_seek(-self.jump_offset)
+    def backward(self, ev):
+        self.on_seek(Direction.Backward)
 
-    def on_seek(self, offset):
-        self.mpv.seek(offset)
+    def on_seek(self, direction):
+         self.mpv.seek(self.jump_offset) if direction == Direction.Forward else self.mpv.seek(-self.jump_offset)
 
     def next_entry(self, ev):
         if self.playlist.len() >= self.current_entry + 1:
@@ -220,10 +226,11 @@ class MpvAdapter:
             return
         self.mpv.volume(ev.data2)
 
-    def set_offset(self, ev):
+    def set_seek(self, ev):
         jump = int(ev.data2 / 2)
         if jump % 2 == 0:
             self.jump_offset = jump
+        self.terminal.refresh()
 
     def get_current_song(self):
         try:
