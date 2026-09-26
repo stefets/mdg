@@ -14,7 +14,7 @@
         "includes/patches/extensions.py",
         "includes/scenes.py",
         "includes/controls.py",
-        "includes/functions/run_debug.py"
+        "includes/functions/run.py"
     ],
     "asoundrc": {
         "U192k": "",
