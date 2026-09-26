@@ -42,17 +42,17 @@ mpv --idle=yes --keep-open=no --no-terminal \
 # ---------------------------------- U192k ----------------------------------
 # Audio only on device: U192k (Socket: /tmp/u192k-a.sock)
 mpv --idle=yes --keep-open=no --no-video --no-terminal \
-    --input-ipc-server=/tmp/u192k-a.sock --audio-device=alsa/U192k \
+    --input-ipc-server=/tmp/u192k-a.sock --audio-device=alsa/U192k -alsa-ignore-chmap=yes \
     --log-file=/tmp/mpv-u192k-a.log --msg-level=all=info &
 
 # Audio only on device: U192k (Socket: /tmp/u192k-b.sock)
 mpv --idle=yes --keep-open=no --no-video --no-terminal \
-    --input-ipc-server=/tmp/u192k-b.sock --audio-device=alsa/U192k \
+    --input-ipc-server=/tmp/u192k-b.sock --audio-device=alsa/U192k -alsa-ignore-chmap=yes \
     --log-file=/tmp/mpv-u192k-b.log --msg-level=all=info &
 
 # Video and audio on device: U192k (Socket: /tmp/u192k-video.sock)
 mpv --idle=yes --keep-open=no --no-terminal \
-    --input-ipc-server=/tmp/u192k-video.sock --audio-device=alsa/U192k \
+    --input-ipc-server=/tmp/u192k-video.sock --audio-device=alsa/U192k -alsa-ignore-chmap=yes \
     --log-file=/tmp/mpv-u192k-video.log --msg-level=all=info &
 
 # ---------------------------------- VIDEO ONLY ----------------------------------
