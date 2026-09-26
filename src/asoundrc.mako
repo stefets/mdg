@@ -22,11 +22,11 @@ pcm.U192k {
 	}
 }
 
-pcm.GT1000 {
+pcm.ToneX {
  	type dmix
  	ipc_key 300
  	slave {
-		pcm "${GT1000}"
+		pcm "${ToneX}"
 	}
 	bindings {
 		0 0
