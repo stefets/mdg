@@ -7,24 +7,12 @@
 # - L'utilisation du Ctrl(3,value) sert a passer le value dans EVENT_VALUE pour l'unité suivante dans une série d'unité
 # - Soit pour assigner une valeur au pédales d'expression du POD HD 500
 # - Soit pour déterminer la valeur d'une transition pour le chargement d'une scène du Philips HUE
-# - Soit pour contrôler Cakewalk
+# - Soit pour contrôler Sonar
 #
 # Controller 3 : ref.: https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
 # CC      Bin             Hex     Control function    Value       Used as
 # 3	00000011	03	Undefined	    0-127	MSB
 
-
-# Base patches (WIP)
-# p_hd500_filter_base = [
-#     (KeyFilter(notes=[65]) >> FS1),
-#     (KeyFilter(notes=[66]) >> CakePlay),
-#     (KeyFilter(notes=[67]) >> FS2),
-#     (KeyFilter(notes=[68]) >> CakeStop),
-#     (KeyFilter(notes=[69]) >> FS3),
-#     (KeyFilter(notes=[70]) >> CakeRecord),
-#     (KeyFilter(notes=[71]) >> FS4),
-#     (KeyFilter(notes=[71]) >> Discard()),
-# ]
 
 p_hue_live = [
     KeyFilter(notes=[61]) >> HueStudioOff,
@@ -287,8 +275,8 @@ p_wonderland_rec = p_pk5ctrl_generic >> [
 # Daw + Hue helper for recording
 p_transport = (pk5_filter >> [
             p_hue_live,
-            Filter(NOTEON)  >> KeyFilter(notes=[60])    >> [CakePlay],
-            Filter(NOTEON)  >> KeyFilter(notes=[62])    >> [CakeRecord],
+            Filter(NOTEON)  >> KeyFilter(notes=[60])    >> [SonarPlay],
+            Filter(NOTEON)  >> KeyFilter(notes=[62])    >> [SonarRecord],
             Filter(NOTEOFF) >> KeyFilter(notes=[60,62]) >> [HueGalaxieMax], 
         ])
 
@@ -306,7 +294,7 @@ restless_natives = [
 p_glissando=(Filter(NOTEON) >> Call(glissando, 48, 84, 100, 0.01, -1, sd90_port_a))
 
 p_grand_designs_mando = [
-    (CtrlFilter(89) >> CakePlay),
-    (CtrlFilter(90) >> CakeRecord),
+    (CtrlFilter(89) >> SonarPlay),
+    (CtrlFilter(90) >> SonarRecord),
     (CtrlFilter(81) >> Port(mpk249_midi)),
 ]

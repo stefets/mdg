@@ -52,7 +52,8 @@ soundcraft_controller=Filter(CTRL|NOTE) >> [
 
 # Common controller for MPK249 and MPK261
 mpk_249_261_controller =  ChannelSplit({
-         1 : CakewalkController,
+         # includes/sonar.py
+         1 : SonarTransportFilter >> SonarController,
          2 : mpv_controller_u192k_a,
          3 : mpv_controller_u192k_b,
          5 : mpv_controller_sd90_a,

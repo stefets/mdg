@@ -9,7 +9,7 @@
         "includes/patches/sd90.py",
         "includes/patches/soundcraft.py",
         "includes/patches/hue.py",
-        "includes/patches/cakewalk.py",
+        "includes/patches/sonar.py",
         "includes/patches/execution.py",
         "includes/patches/extensions.py",
         "includes/scenes.py",

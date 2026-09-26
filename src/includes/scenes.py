@@ -158,14 +158,14 @@ _scenes = {
         ],
     ),
     80: SceneGroup(
-        "Cakewalk",
+        "SonarController",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Play", init_patch=CakePlay, patch=CtrlFilter(89) >> CakePlay),
-            Scene("Stop", init_patch=CakeStop, patch=Discard()),
-            Scene("Record", init_patch=CakeRecord, patch=CtrlFilter(90) >> CakeRecord),
-            Scene("Rewind", init_patch=CakeRewind, patch=Discard()),
-            Scene("Forward", init_patch=CakeForward, patch=Discard()),
+            Scene("Play", init_patch=SonarPlay, patch=CtrlFilter(89) >> SonarPlay),
+            Scene("Stop", init_patch=SonarStop, patch=Discard()),
+            Scene("Record", init_patch=SonarRecord, patch=CtrlFilter(90) >> SonarRecord),
+            Scene("Rewind", init_patch=SonarRewind, patch=Discard()),
+            Scene("Forward", init_patch=SonarForward, patch=Discard()),
             Scene(
                 "Drum",
                 init_patch=SP1,
