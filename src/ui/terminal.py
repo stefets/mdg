@@ -1,3 +1,4 @@
+from pathlib import Path
 from rich.columns import Columns
 from rich.console import Group
 from rich.live import Live
@@ -43,7 +44,7 @@ class TerminalUI:
                 padding=(0, 0),
             )
             adapter_table.add_row(
-                adapter.address,
+                Path(adapter.address).stem.upper(),
                 volume,
                 f"{adapter.jump_offset}s",
                 self.indicator(adapter.paused, "yellow"),
