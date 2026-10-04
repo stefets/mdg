@@ -4,6 +4,7 @@
 #
 
 hook(
+    AutoRestart(),
     OSCInterface(),
     MemorizeScene("/tmp/hook.memorize-scene")
 )
