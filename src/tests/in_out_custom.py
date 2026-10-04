@@ -106,7 +106,7 @@ config(
 hook(
     AutoRestart(),
     OSCInterface(),
-    MemorizeScene(".hook.memorize_scene")
+    MemorizeScene("/tmp/.hook.tests.memorize_scene")
 )
 
 pre  = Print('input', portnames='in') 
