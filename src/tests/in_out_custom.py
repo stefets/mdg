@@ -106,7 +106,7 @@ config(
 hook(
     AutoRestart(),
     OSCInterface(),
-    MemorizeScene(".hook.memorize_scene")
+    MemorizeScene("/tmp/.hook.tests.memorize_scene")
 )
 
 pre  = Print('input', portnames='in') 
@@ -119,7 +119,7 @@ post = Print('output',portnames='out')
 run(
     control=Pass(),
     scenes = {
-        1 : Scene("Empty", init_patch=Discard(), patch=Discard()),
+        1 : Scene("Empty", init_patch=Discard(), patch=Pass()),
     },
     pre=pre,
     post=post,

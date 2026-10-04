@@ -1,15 +1,15 @@
 {
     "items": [
+        "includes/header.txt",
         "includes/imports.py",
         "includes/functions/config.py",
         "includes/functions/hook.py",
         "includes/helpers.py",
         "includes/patches/filters.py",
         "includes/patches/sd90.py",
-        "includes/patches/gt1000.py",
         "includes/patches/soundcraft.py",
         "includes/patches/hue.py",
-        "includes/patches/cakewalk.py",
+        "includes/patches/sonar.py",
         "includes/patches/execution.py",
         "includes/patches/extensions.py",
         "includes/scenes.py",
@@ -19,7 +19,7 @@
     "asoundrc": {
         "U192k": "",
         "SD90": "",
-        "GT1000": ""
+        "ToneX": ""
     },
     "mpv": {
         "socket": {

@@ -1,4 +1,8 @@
 
+#
+# Import section
+#
+
 import os
 import sys
 import json
@@ -21,8 +25,8 @@ load_dotenv()
 # Extensions
 from adapters.mpv import MpvAdapter
 from plugins.playlist import PlaylistManager
-from extensions.philips import *
-from extensions.spotify import *
-from extensions.midimix import *
-from extensions.gt1000 import GT1KPreset
+from plugins.philips import *
+from plugins.spotify import *
+from plugins.midimix import *
+from plugins.gt1000 import GT1KPreset
 from ui.terminal import TerminalUI

@@ -1,4 +1,8 @@
 
+#
+# Config section
+#
+
 midimix_midi = "midimix"
 
 behringer    = "behringer"

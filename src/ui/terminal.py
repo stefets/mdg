@@ -1,6 +1,10 @@
-from rich.live import Live
-from rich.table import Table
+from pathlib import Path
+from rich.columns import Columns
 from rich.console import Group
+from rich.live import Live
+from rich.progress_bar import ProgressBar
+from rich.table import Table
+from rich.text import Text
 
 
 class TerminalUI:
@@ -19,20 +23,34 @@ class TerminalUI:
         self.playlist = playlist
 
     def render(self):
-        adapter_table = Table(title="MIDIDINGS")
+        adapter_table = Table(title="MIDIDINGS", title_justify="left")
 
         adapter_table.add_column("MPV")
-        adapter_table.add_column("Volume")
+        adapter_table.add_column("Volume", width=19)
         adapter_table.add_column("Jump")
-        adapter_table.add_column("Auto-next")
+        adapter_table.add_column("Paused", justify="center")
+        adapter_table.add_column("Muted", justify="center")
+        adapter_table.add_column("Loop", justify="center")
+        adapter_table.add_column("Auto-next", justify="center")
         adapter_table.add_column("Song")
 
         for adapter in self.adapters:
+            volume = Columns(
+                [
+                    ProgressBar(total=100, completed=adapter.volume, width=12),
+                    Text(f" {adapter.volume:.0f}%")
+                ],
+                expand=False,
+                padding=(0, 0),
+            )
             adapter_table.add_row(
-                adapter.address,
-                f"{adapter.volume}%",
+                Path(adapter.address).stem.upper(),
+                volume,
                 f"{adapter.jump_offset}s",
-                str(adapter.autonext),
+                self.indicator(adapter.paused, "yellow"),
+                self.indicator(adapter.muted, "red"),
+                self.indicator(adapter.loop, "green"),
+                self.indicator(adapter.autonext, "green"),
                 adapter.get_current_song() or "",
             )
 
@@ -50,7 +68,7 @@ class TerminalUI:
             for index, song in enumerate(songs, start=1):
                 playlist_table.add_row(
                     str(index),
-                    str(song),
+                    song.name,
                 )
 
         return Group(
@@ -72,3 +90,6 @@ class TerminalUI:
         self.live.update(
             self.render()
         )
+
+    def indicator(self, value, color):
+        return f"[{color}]●[/{color}]" if value else "[dim]○[/dim]"

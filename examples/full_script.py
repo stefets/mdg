@@ -1,13 +1,28 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 
+        
 '''
+My mididings script with plugins
+
+Plugins:
+- mpv : to start audio or video files from my controller, mpv use the plugin playlist
+- playlist : scan media files in a directory and keep the list of files in an array
+- midimix : to control the state of the leds
+- gt1000 : to change bank on a BOSS GT-1000
+- hd500 : to change bank on a LINE6 HD500
+- philips : to control Philips Hue lights and scenes
+- spotify : to control Spotify playlist
+
 Thanks to the programmer Dominic Sacré for that unbeatable MIDI engine - a true masterpiece
 
 https://github.com/mididings/mididings (Community version! My prayers have been answered)
 '''
-
         
+#
+# Import section
+#
+
 import os
 import sys
 import json
@@ -30,12 +45,16 @@ load_dotenv()
 # Extensions
 from adapters.mpv import MpvAdapter
 from plugins.playlist import PlaylistManager
-from extensions.philips import *
-from extensions.spotify import *
-from extensions.midimix import *
-from extensions.gt1000 import GT1KPreset
+from plugins.philips import *
+from plugins.spotify import *
+from plugins.midimix import *
+from plugins.gt1000 import GT1KPreset
 from ui.terminal import TerminalUI
         
+#
+# Config section
+#
+
 midimix_midi = "midimix"
 
 behringer    = "behringer"
@@ -120,13 +139,13 @@ config(
     ],
 )
         
+#
+# Hook section
+#
+
 hook(
     OSCInterface(),
-    MemorizeScene("/tmp/hook.memorize_scene"),
-    AutoRestart(filenames=["includes/scenes.py",
-                           "includes/controls.py",
-                           "includes/functions/hook.py",
-                           "includes/functions/run.py"])
+    MemorizeScene("/tmp/hook.memorize-scene")
 )
             
 # --------------------------------------------------------------------
@@ -151,45 +170,6 @@ def glissando(ev, from_note, to_note, vel, duration, direction, port):
 
 # -------------------------------------------------------------------------------------------
 
-def NavigateToScene(ev):
-    ''' 
-    Navigate through Scenes and Sub-Scenes
-    
-    MIDIDINGS does not wrap in the builtin ScenesSwitch but SubSecenesSwitch yes with the wrap parameter
-    
-    With that function, you can wrap trough Scenes AND SubScenes
-    
-    That function assume that the first SceneNumber is 1
-    '''
-    if ev.ctrl == 20:
-        nb_scenes = len(scenes())
-        cs = current_scene()
-        # Scene backward
-        if ev.value == 1:
-            if cs > 1:
-                switch_scene(cs - 1)
-            # Scene forward and wrap
-        elif ev.value == 2:
-            if cs < nb_scenes:
-                switch_scene(cs + 1)
-            else:
-                switch_scene(1)
-            # SubScene backward
-        elif ev.value == 3:
-            css = current_subscene()
-            if css > 1:
-                switch_subscene(css - 1)
-            # SubScene forward and wrap
-        elif ev.value == 4:
-            css = current_subscene()
-            nb_subscenes = len(scenes()[cs][1])
-            if nb_subscenes > 0 and css < nb_subscenes:
-                switch_subscene(css + 1)
-            else:
-                switch_subscene(1)
-
-# ---------------------------------------------------------------------------------------------------------
-
 # Create a pitchbend from a filter logic
 # Params : direction when 1 bend goes UP, when -1 bend goes down
 #          dont set direction with other values than 1 or -1 dude !
@@ -210,17 +190,6 @@ def setenv(ev, key, value):
 
 # ---------------------------------------------------------------------------------------------------------
 
-def OnDebug(ev):
-    print(ev)
-
-# ---------------------------------------------------------------------------------------------------------
-
-class Playlist:
-    def __init__(self):
-        pass
-    
-    def __call__(self, ev):
-        pass
         
 #
 # Pre-buit filters for patches
@@ -501,24 +470,6 @@ SD90_Initialize = [
     AfxOn, 
     InitPitchBend, 
 ]
-
-        
-#
-# The Boss GT-1000 definition file for mididings
-# This device has 4 banks, each bank contains 50 programs 
-#
-
-gt1k_port = "mpk249_midi"
-
-# Internal Midi channel configured in the gt1k USB options
-gt1k_listen_channel = 9
-
-gt1k = CtrlSplit({
-    55 : [Print("OK"),Ctrl(gt1k_port, gt1k_listen_channel, 1, EVENT_VALUE)],
-})
-
-
-
 
         
 '''
@@ -856,41 +807,43 @@ p_hue = Filter(NOTEON) >> [
 
         
 #
-# Cakewalk Generic Control Surface definition -----------------------------------------------
+# Sonarwalk Generic Control Surface definition -----------------------------------------------
 #
 
 # Setup controllers
-cw_rew  = 115
-cw_fwd  = 116
-cw_stop = 117
-cw_play = 118
-cw_rec  = 119
+sonar_rew  = 115
+sonar_fwd  = 116
+sonar_stop = 117
+sonar_play = 118
+sonar_rec  = 119
 
 # Allowed controllers
-ctrls = [cw_rec, cw_stop, cw_play, cw_rec, cw_fwd]
+ctrls = [sonar_rec, sonar_stop, sonar_play, sonar_rec, sonar_fwd]
+SonarTransportFilter = CtrlFilter(ctrls)    # Use in the control patch
 
 # Trigger value
-cw_trigger_value = 127
+sonar_trigger_value = 127
 
 # Listen channel
-cw_channel = 1
+sonar_channel = 1
 
 # Output port
-cw_port = um2_midi_2
+sonar_port = um2_midi_2
 
 # ---------------
 
 # Execution patches
-CakewalkController = CtrlFilter(ctrls) >> Ctrl(cw_port, cw_channel, EVENT_CTRL, cw_trigger_value) 
+SonarController = Ctrl(sonar_port, sonar_channel, EVENT_CTRL, sonar_trigger_value) 
 
 # Direct DAW patch
-CakeStop   = Ctrl(cw_stop, EVENT_VALUE) >> CakewalkController
-CakePlay   = [CakeStop, Ctrl(cw_play, EVENT_VALUE)] >> CakewalkController
-CakeRecord = Ctrl(cw_rec,  EVENT_VALUE) >> CakewalkController
+SonarStop   = Ctrl(sonar_stop, EVENT_VALUE) >> SonarController
+SonarPlay   = [SonarStop, Ctrl(sonar_play, EVENT_VALUE)] >> SonarController
+SonarRecord = Ctrl(sonar_rec,  EVENT_VALUE) >> SonarController
 
 # WIP
-CakeRewind = Ctrl(cw_rew, EVENT_VALUE) >> CakewalkController
-CakeForward= Ctrl(cw_fwd, EVENT_VALUE) >> CakewalkController
+SonarRewind = Ctrl(sonar_rew, EVENT_VALUE) >> SonarController
+SonarForward= Ctrl(sonar_fwd, EVENT_VALUE) >> SonarController
+
 
         
 # -----------------------------------------------------------------------------------------------
@@ -901,24 +854,12 @@ CakeForward= Ctrl(cw_fwd, EVENT_VALUE) >> CakewalkController
 # - L'utilisation du Ctrl(3,value) sert a passer le value dans EVENT_VALUE pour l'unité suivante dans une série d'unité
 # - Soit pour assigner une valeur au pédales d'expression du POD HD 500
 # - Soit pour déterminer la valeur d'une transition pour le chargement d'une scène du Philips HUE
-# - Soit pour contrôler Cakewalk
+# - Soit pour contrôler Sonar
 #
 # Controller 3 : ref.: https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
 # CC      Bin             Hex     Control function    Value       Used as
 # 3	00000011	03	Undefined	    0-127	MSB
 
-
-# Base patches (WIP)
-# p_hd500_filter_base = [
-#     (KeyFilter(notes=[65]) >> FS1),
-#     (KeyFilter(notes=[66]) >> CakePlay),
-#     (KeyFilter(notes=[67]) >> FS2),
-#     (KeyFilter(notes=[68]) >> CakeStop),
-#     (KeyFilter(notes=[69]) >> FS3),
-#     (KeyFilter(notes=[70]) >> CakeRecord),
-#     (KeyFilter(notes=[71]) >> FS4),
-#     (KeyFilter(notes=[71]) >> Discard()),
-# ]
 
 p_hue_live = [
     KeyFilter(notes=[61]) >> HueStudioOff,
@@ -1181,8 +1122,8 @@ p_wonderland_rec = p_pk5ctrl_generic >> [
 # Daw + Hue helper for recording
 p_transport = (pk5_filter >> [
             p_hue_live,
-            Filter(NOTEON)  >> KeyFilter(notes=[60])    >> [CakePlay],
-            Filter(NOTEON)  >> KeyFilter(notes=[62])    >> [CakeRecord],
+            Filter(NOTEON)  >> KeyFilter(notes=[60])    >> [SonarPlay],
+            Filter(NOTEON)  >> KeyFilter(notes=[62])    >> [SonarRecord],
             Filter(NOTEOFF) >> KeyFilter(notes=[60,62]) >> [HueGalaxieMax], 
         ])
 
@@ -1200,8 +1141,8 @@ restless_natives = [
 p_glissando=(Filter(NOTEON) >> Call(glissando, 48, 84, 100, 0.01, -1, sd90_port_a))
 
 p_grand_designs_mando = [
-    (CtrlFilter(89) >> CakePlay),
-    (CtrlFilter(90) >> CakeRecord),
+    (CtrlFilter(89) >> SonarPlay),
+    (CtrlFilter(90) >> SonarRecord),
     (CtrlFilter(81) >> Port(mpk249_midi)),
 ]
         
@@ -1213,11 +1154,17 @@ Those modules are callable objects (__call__)
 terminal = TerminalUI()
 manager = PlaylistManager(terminal)
 
-# AUDIO_DEVICE multiple instances allow me to play sounds in parallal (dmix)
+# MPV adapters for audio and video devices, using the socket paths from the config
 mpv_config = config.get("mpv").get("socket")
 AUDIO_DEVICE_SD90_A = Call(MpvAdapter(mpv_config.get("SD90_A"), manager.playlist, terminal))
 AUDIO_DEVICE_SD90_B = Call(MpvAdapter(mpv_config.get("SD90_B"), manager.playlist, terminal))
-AUDIO_DEVICE_U192k  = Call(MpvAdapter(mpv_config.get("U192k"), manager.playlist, terminal))
+AUDIO_DEVICE_SD90_VIDEO  = Call(MpvAdapter(mpv_config.get("SD90_VIDEO"), manager.playlist, terminal))
+
+AUDIO_DEVICE_U192k_A  = Call(MpvAdapter(mpv_config.get("U192k_A"), manager.playlist, terminal))
+AUDIO_DEVICE_U192k_B  = Call(MpvAdapter(mpv_config.get("U192k_B"), manager.playlist, terminal))
+AUDIO_DEVICE_U192k_VIDEO  = Call(MpvAdapter(mpv_config.get("U192k_VIDEO"), manager.playlist, terminal))
+
+MPV_VIDEO = Call(MpvAdapter(mpv_config.get("VIDEO"), manager.playlist, terminal))
 
 # Playlist according to current scene, a singleton is enough
 PLAYLIST_MANAGER = Call(manager)
@@ -1384,14 +1331,14 @@ _scenes = {
         ],
     ),
     80: SceneGroup(
-        "Cakewalk",
+        "SonarController",
         [
             Scene("Select a Subscene", init_patch=Discard(), patch=Discard()),
-            Scene("Play", init_patch=CakePlay, patch=CtrlFilter(89) >> CakePlay),
-            Scene("Stop", init_patch=CakeStop, patch=Discard()),
-            Scene("Record", init_patch=CakeRecord, patch=CtrlFilter(90) >> CakeRecord),
-            Scene("Rewind", init_patch=CakeRewind, patch=Discard()),
-            Scene("Forward", init_patch=CakeForward, patch=Discard()),
+            Scene("Play", init_patch=SonarPlay, patch=CtrlFilter(89) >> SonarPlay),
+            Scene("Stop", init_patch=SonarStop, patch=Discard()),
+            Scene("Record", init_patch=SonarRecord, patch=CtrlFilter(90) >> SonarRecord),
+            Scene("Rewind", init_patch=SonarRewind, patch=Discard()),
+            Scene("Forward", init_patch=SonarForward, patch=Discard()),
             Scene(
                 "Drum",
                 init_patch=SP1,
@@ -1551,16 +1498,31 @@ _scenes = {
 # Patches for the run().control patch
 #
 
-# Transport filter
+# Transport filters
 jump_filter    = CtrlFilter(1)  >> CtrlValueFilter(0, 121)
+
+# 0 = Mute is False / 127 = Mute is True
+mute_filter    = CtrlFilter(2) >> [
+    CtrlValueFilter(0),
+    CtrlValueFilter(127)
+]
 volume_filter  = CtrlFilter(7)  >> CtrlValueFilter(0, 101)
-# TODO: Adjust Transpose for the MPK249 later (-36) and MPK261 (-24) to match the correct note range for triggering samples
-trigger_filter = Filter(NOTEON) >> Transpose(-24)
-transport_filter = [jump_filter, volume_filter, trigger_filter]
+transport_filter = [
+    jump_filter,
+    volume_filter, 
+    Filter(NOTEON),
+    mute_filter
+]
 
 mpv_controller_sd90_a = transport_filter >> AUDIO_DEVICE_SD90_A
 mpv_controller_sd90_b = transport_filter >> AUDIO_DEVICE_SD90_B
-mpv_controller_u192k = transport_filter >> AUDIO_DEVICE_U192k
+mpv_controller_sd90_video = transport_filter >> AUDIO_DEVICE_SD90_VIDEO
+
+mpv_controller_u192k_a = transport_filter >> AUDIO_DEVICE_U192k_A
+mpv_controller_u192k_b = transport_filter >> AUDIO_DEVICE_U192k_B
+mpv_controller_u192k_video = transport_filter >> AUDIO_DEVICE_U192k_VIDEO
+
+mpv_controller_video = transport_filter >> MPV_VIDEO
 
 sd90_controller = Port(sd90_port_a) >> [ 
     CtrlFilter(0) >> WaveLevel,
@@ -1571,60 +1533,81 @@ sd90_controller = Port(sd90_port_a) >> [
     CtrlFilter(5) >> RecLevel,
  ]
 
-# Spotify
-spotify_controller = [
-  trigger_filter,
-  volume_filter, 
-  CtrlFilter(44),
-] >> Call(SpotifyPlayer())
-
-soundcraft_controller=Filter(CTRL|NOTE) >> [
+soundcraft_controller = Filter(CTRL|NOTE) >> [
         Filter(CTRL) >> Pass(),
         Filter(NOTE) >> NoteOn(EVENT_NOTE, 127) >> Port(midimix_midi),
     ] >> soundcraft_control
 
 # Common controller for MPK249 and MPK261
 mpk_249_261_controller =  ChannelSplit({
-         1 : CakewalkController,
-         2 : mpv_controller_u192k,
-         4 : mpv_controller_sd90_b,
-         8 : mpv_controller_sd90_a,
-        13 : p_hue,
+         # includes/sonar.py
+         1 : SonarTransportFilter >> SonarController,
+         2 : mpv_controller_sd90_a,
+         3 : mpv_controller_sd90_b,
+         4 : mpv_controller_sd90_video,
+         5 : mpv_controller_u192k_a,
+         6 : mpv_controller_u192k_b,
+         7 : mpv_controller_u192k_video,
         14: sd90_controller,
     })
 
 # Midi input control patch
 control_patch = PortSplit({
+
+    # Akai MIDIMIX / https://www.akaipro.com/midimix/
     midimix_midi : soundcraft_control,
-    mpk249_midi : ChannelSplit({
-        4 : mpv_controller_sd90_b,
-    }),
-    mpk261_midi : ChannelSplit({
-        4 : mpv_controller_sd90_b,
-    }),
+
+    # Akai MPK249 / https://www.akaipro.com/mpk249/
+    # Port A
     mpk249_port_a : mpk_249_261_controller,
-    mpk261_port_a : mpk_249_261_controller,
+    # Port B
     mpk249_port_b : ChannelSplit({
-         1 : Program(sd90_port_a, EVENT_CHANNEL, EVENT_VALUE),
-         2 : Channel(1) >> Port(mixxx_midi_0),
-         8 : mpv_controller_sd90_a,
-         4 : mpv_controller_sd90_b,
+        # Mapping of the MPK249 PADS
+        1 : mpv_controller_video,
+        2 : p_hue,
+    }),  
+    # DIN Port
+    mpk249_midi : ChannelSplit({
+        # Roland PK5 connected to the MIDI IN of the MPK249
+        4 : Transpose(-36) >> mpv_controller_sd90_b,
     }),
 
-    sd90_midi_1 : Pass(),
-    sd90_midi_2 : Pass(),
-    behringer   : Pass(),
+    # Akai MPK261 / https://www.akaipro.com/mpk261/
+    # Port A
+    mpk261_port_a : mpk_249_261_controller,
+    # Port B
+    mpk261_port_b : ChannelSplit({
+        # Mapping of the MPK261 PADS
+        1 : mpv_controller_video,
+        2 : p_hue,
+    }),
+    # DIN Port
+    mpk261_midi : ChannelSplit({
+        # Roland PK5 connected to the MIDI IN of the MPK249
+        4 : Transpose(-24) >> mpv_controller_sd90_b,
+    }),
     
-    # Direct routing of the Numark to the virtual port used by Mixxx
+    # Direct routing of the Numark controllers to the virtual port used by Mixxx
+    # This allow me to use other controllers in addition of the Numark controller to control Mixxx
+    # https://www.numark.com/new/party-mix-3/
     numark_midi_pmv3_0 : Port(mixxx_midi_0),
+    
+    # https://www.numark.com/product/party-mix-ii
     numark_midi_pmv2_0 : Port(mixxx_midi_0),
-    um2_midi_1 : ChannelSplit({
-        15 : gt1k,
-    }),
 
+    # Suspended for analysis, not used in the current configuration
+    # mpk249_port_b : ChannelSplit({
+    #      1 : Program(sd90_port_a, EVENT_CHANNEL, EVENT_VALUE),
+    #      2 : Channel(1) >> Port(mixxx_midi_0),
+    # }),
+    
 })
 
         
+#
+# Run section
+#
+
 pre  = ~Filter(SYSRT_CLOCK) >> ~ChannelFilter(8, 9, 11, 13, 15) 
 post = Pass()
 

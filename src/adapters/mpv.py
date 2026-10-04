@@ -1,21 +1,18 @@
-import os
-import json
-from range_key_dict import RangeKeyDict
-from colorama import Fore, Style
-
 import mididings.constants as _constants
 from mididings.engine import (
-    scenes,
     current_scene,
-    switch_scene,
     current_subscene,
+    scenes,
+    switch_scene,
     switch_subscene,
 )
-from mididings.event import NoteOnEvent
+from range_key_dict import RangeKeyDict
+from plugins.transport import Direction
 
 from plugins.mpv import MpvClient
 
-class MpvAdapter():
+
+class MpvAdapter:
     def __init__(self, address: str, playlist, terminal):
         if address is None:
             raise ValueError("IPC socket path must be provided")
@@ -26,23 +23,26 @@ class MpvAdapter():
         self.terminal.register_adapter(self)
         self.jump_offset = 10
         self.autonext = False
-        self.current_entry = -1
+        self.current_entry = 0
 
-        # The MPV client instance        
-        self.mpv = MpvClient(address, self.mpv_event_callback)
-
+        self.paused = False
+        self.muted = False
         self.volume = 100
+        self.loop = False
+
+        # The MPV client instance
+        self.mpv = MpvClient(address, self.mpv_event_callback)
         self.mpv.volume(self.volume)
 
         # Accepted range | Range array over the note_mapping array
         # Upper bound is exclusive
         self.note_range_mapping = RangeKeyDict(
             {
-                (0, 1): self.unassigned,
+                (0, 1): self.on_toggle_loop,
                 (1, 36): self.on_play,
                 (36, 41): self.navigate_scene,
                 (41, 48): self.navigate_player,
-                #(self.controller.size - 1, self.controller.size): self.on_replay,
+                # (self.controller.size - 1, self.controller.size): self.on_replay,
             }
         )
 
@@ -54,9 +54,9 @@ class MpvAdapter():
             39: self.next_subscene,
             40: self.next_scene,
             # White keys
-            41: self.rewind,
+            41: self.backward,
             43: self.toggle_autonext,
-            45: self.on_toggle_mute,
+            45: self.on_toggle_loop,
             47: self.forward,
             # Black keys
             42: self.prev_entry,
@@ -65,32 +65,42 @@ class MpvAdapter():
         }
 
         # Control change mapping
-        self.ctrl_range_mapping = RangeKeyDict(
-            {
-                (0, 2): self.set_offset,
-                (7, 8): self.set_volume,
+        self.ctrl_mapping = {
+                1: self.set_seek,
+                2: self.on_toggle_mute,
+                7: self.set_volume,
             }
-        )
 
     # call from mididings
     def __call__(self, ev):
-        self.ctrl_range_mapping[ev.data1](
+        self.ctrl_mapping[ev.data1](
             ev
         ) if ev.type == _constants.CTRL else self.note_range_mapping[ev.data1](ev)
-        self.terminal.refresh()
 
     # Event from MpvClient
     def mpv_event_callback(self, message):
-        if message.get("event") == "end-file":
+        event_name = message.get("event")
+        if event_name == "end-file":
             if message.get("reason") == "eof":
                 if self.autonext:
                     self.load_current_entry(self.current_entry + 1)
-        elif message.get("event") == "property-change":
+                else:
+                    pass
+        elif event_name == "property-change":
             if message.get("name") == "volume":
                 self.volume = message.get("data")
+            elif message.get("name") == "pause":
+                self.paused = message.get("data")
+            elif message.get("name") == "mute":
+                self.muted = message.get("data")
+            elif message.get("name") == "loop-file":
+                self.loop = message.get("data") == "inf"
+        elif event_name == "start-file":
+            pass  # No action but need a refresh to update the terminal with the current song
         else:
             print(f"Unhandled event: {message}")
-            pass
+
+        self.terminal.refresh()
 
     # Logic
     def navigate_scene(self, ev):
@@ -104,6 +114,9 @@ class MpvAdapter():
     def unassigned(self, ev):
         pass
 
+    def on_toggle_loop(self, ev):
+        self.mpv.toggle_loop()
+    
     def enable_autonext(self, ev):
         self.set_autonext(True)
 
@@ -115,6 +128,7 @@ class MpvAdapter():
 
     def set_autonext(self, value):
         self.autonext = value
+        self.terminal.refresh()
 
     # Scenes navigation
     def home_scene(self, ev):
@@ -124,21 +138,28 @@ class MpvAdapter():
         switch_scene(index)
 
     def next_scene(self, ev):
-        self.on_switch_scene(1)
+        self.on_switch_scene(Direction.Forward)
 
     def prev_scene(self, ev):
-        self.on_switch_scene(-1)
+        self.on_switch_scene(Direction.Backward)
 
-    def on_switch_scene(self, offset):
-        self.current_scene = index = current_scene() + offset
+    def on_switch_scene(self, direction):
+        offset = 1 if direction == Direction.Forward else -1
+        keys = list(scenes().keys())
+        index = keys.index(current_scene()) + offset
 
         # Go to first or last scene
-        if index < 1:
-            self.current_scene = len(scenes())
-        elif index > len(scenes()):
-            self.current_scene = 1
+        if index < 0:
+            # Switch to last scene if the index is before the first scene
+            key = keys[-1]
+        elif index > len(scenes()) - 1:
+            # Switch to first scene if the index is after the last scene
+            key = keys[0]
+        else:
+            # Normal switch
+            key = keys[index]
 
-        switch_scene(self.current_scene)
+        switch_scene(key)
 
         self.current_entry = 0
 
@@ -157,36 +178,38 @@ class MpvAdapter():
         self.load_current_entry(ev.data1)
 
     def load_current_entry(self, index):
-        #print(f"Loading entry {index} from playlist with {len(self.playlist.songs)} entries.")
         if index > len(self.playlist.songs):
             print(
-                Fore.RED
-                + "Index {} is out of range for playlist with {} entries".format(index, len(self.playlist.songs))
+                f"Index {index} is out of range for playlist with {len(self.playlist.songs)} entries"
             )
             return
 
-        self.mpv.unpause()  # Unpause before loading the file to ensure playback starts immediately
-        self.mpv.load(
-            str(self.playlist.songs[index - 1])
-        )
         self.current_entry = index
-            
+
+        self.mpv.unpause()  # Unpause before loading the file to ensure playback starts immediately
+        self.mpv.load(str(self.playlist.songs[self.current_entry - 1]))
+
     def on_toggle_pause(self, ev):
         """Pause if playing, else resume if paused"""
         self.mpv.toggle_pause()
 
     def on_toggle_mute(self, ev):
         """Mute or UnMute if playing"""
-        self.mpv.toggle_mute()
+        if ev.data2 == 0:
+            self.mpv.unmute()
+        elif ev.data2 == 127:
+            self.mpv.mute()
+        else:
+            print(f"Invalid CC value [{ev.data2}] for mute/unmute.")
 
     def forward(self, ev):
-        self.on_seek(self.jump_offset)
+        self.on_seek(Direction.Forward)
 
-    def rewind(self, ev):
-        self.on_seek(-self.jump_offset)
+    def backward(self, ev):
+        self.on_seek(Direction.Backward)
 
-    def on_seek(self, offset):
-        self.mpv.seek(offset)
+    def on_seek(self, direction):
+         self.mpv.seek(self.jump_offset) if direction == Direction.Forward else self.mpv.seek(-self.jump_offset)
 
     def next_entry(self, ev):
         if self.playlist.len() >= self.current_entry + 1:
@@ -203,17 +226,16 @@ class MpvAdapter():
             return
         self.mpv.volume(ev.data2)
 
-    def set_offset(self, ev):
+    def set_seek(self, ev):
         jump = int(ev.data2 / 2)
         if jump % 2 == 0:
             self.jump_offset = jump
+        self.terminal.refresh()
 
     def get_current_song(self):
         try:
             if self.current_entry > 0:
-                return "{}-{}".format(
-                    self.current_entry, self.playlist.songs[self.current_entry - 1]
-                )
+                return f"{self.current_entry}-{self.playlist.songs[self.current_entry - 1].name}"
         except IndexError:
             return "IndexError"
 
@@ -221,4 +243,4 @@ class MpvAdapter():
         if self.current_entry > 0:
             # TODO: Replay the current entry
             pass
-            #self.mpv.load_list(self.current_entry, self.playlist.filename)        
+            # self.mpv.load_list(self.current_entry, self.playlist.filename)
