@@ -318,4 +318,11 @@ _scenes = {
             Scene("FCBNUM1",  init_patch=Discard(), patch=Port(mpk249_midi)),
         ],
     ),
+    190: SceneGroup("ToneX", [
+        Scene("Select ToneX patch", init_patch=Discard(), patch=Discard()),
+        Scene("00A", init_patch=Call(ToneX("00A")), patch=Discard()),
+        Scene("42B", init_patch=Call(ToneX("42B")), patch=Discard()),
+        Scene("42C", init_patch=Call(ToneX("42C")), patch=Discard()),
+        Scene("49C", init_patch=Call(ToneX("49C")), patch=Discard()),
+    ]),
 }
