@@ -1,3 +1,48 @@
+## [0.2.3] - 2026-10-04
+
+### 🚀 Features
+
+- Add launch script to initialize mpv and mididings
+- Enhance MPV adapter with pause and mute functionality, update terminal UI to reflect new states
+- Add loop
+- Add progress bar for volume and indicator for loop
+- Add Direction transport and remove control range mapping
+- Add mute filter int transport filter patch
+- *(alsa)* Add ToneX audio device #144
+- *(mpv)* Add -alsa-ignore-chmap option for U192k audio devices
+- *(terminal)* Update adapter address display to show uppercase stem
+
+### 🐛 Bug Fixes
+
+- Use environment variable for media library path in PlaylistManager
+- Switch scene by the key of the scene dictionary instead of a stupid offset +1 or -1
+
+### 🚜 Refactor
+
+- Move extensions under plugins namespace
+- Rename Cakewalk for Sonar
+- *(controller)* Optimize control patch (WIP)
+
+### 📚 Documentation
+
+- Remove VLC Server mention from README
+- Add header and section comments to various files
+- Update full script example
+- Update README
+- Update full script example
+
+### 🧪 Testing
+
+- Use Pass instead of Discard for debugging
+- Set memorizeScene file in /tmp
+
+### ⚙️ Miscellaneous Tasks
+
+- Update CHANGELOG for version 0.2.1 with refactor and documentation changes
+- Remove dead wood
+- Update config
+- Rename doc directory to docs
+- Update ignore file
 ## [0.2.1] - 2026-09-20
 
 ### 🚜 Refactor
