@@ -47,8 +47,8 @@
 Bank selector - usefull in a scene init_patch
   * **GT1000** to switch bank on a BOSS GT-1000
     * init_patch=Call(GT1KPreset("P26-3"))
-  * **ToneX** to switch bank on a ToneX (WIP)
-    * init_patch=Call(ToneX("2C"))
+  * **ToneX** to switch bank on a ToneX
+    * init_patch=Call(ToneX("31B"))
   * **HD500** to switch bank on a Line6 POD HD500
     * init_patch=Call(HD500PC("10C"))
 ## UI
