@@ -1,3 +1,16 @@
+## [0.2.4] - 2026-10-04
+
+### 🚀 Features
+
+- Add ToneX bank selector plugin #144
+
+### 🚜 Refactor
+
+- Add AutoRestart()
+
+### 📚 Documentation
+
+- Update changelog
 ## [0.2.3] - 2026-10-04
 
 ### 🚀 Features
