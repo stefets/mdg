@@ -49,6 +49,8 @@ mixxx_midi_0  = "mixxx_midi_0"
 um2_midi_1 = "um2_midi_1"
 um2_midi_2 = "um2_midi_2"
 
+tonex_midi = "tonex_midi"
+
 config(
 
     initial_scene = 1,
@@ -75,6 +77,7 @@ config(
         (mixxx_midi_0,'.*VirMIDI.*-0$',),
         (numark_midi_pmv3_0,'.*Party Mix III MIDI 1.*',),
         (numark_midi_pmv2_0,'.*Party Mix MKII MIDI 1.*',),
+        (tonex_midi,'.*ToneX MIDI 1.*',),
         (um2_midi_1,'.*UM-2 MIDI 1.*',),
         (um2_midi_2,'.*UM-2 MIDI 2.*',),
     ],
@@ -99,6 +102,7 @@ config(
         (mixxx_midi_0,'.*VirMIDI.*-0$',),
         (numark_midi_pmv3_0,'.*Party Mix III MIDI 1.*',),
         (numark_midi_pmv2_0,'.*Party Mix MKII MIDI 1.*',),
+        (tonex_midi,'.*ToneX MIDI 1.*',),
         (um2_midi_1,'.*UM-2 MIDI 1.*',),
     ],
 )

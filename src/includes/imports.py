@@ -29,4 +29,5 @@ from plugins.philips import *
 from plugins.spotify import *
 from plugins.midimix import *
 from plugins.gt1000 import GT1KPreset
+from plugins.tonex import ToneX
 from ui.terminal import TerminalUI
