@@ -49,6 +49,7 @@ from plugins.philips import *
 from plugins.spotify import *
 from plugins.midimix import *
 from plugins.gt1000 import GT1KPreset
+from plugins.tonex import ToneX
 from ui.terminal import TerminalUI
         
 #
@@ -57,7 +58,7 @@ from ui.terminal import TerminalUI
 
 midimix_midi = "midimix"
 
-behringer    = "behringer"
+umc204hd    = "umc204hd"
 
 sd90_port_a  = "sd90_port_a"
 sd90_port_b  = "sd90_port_b"
@@ -85,6 +86,8 @@ mixxx_midi_0  = "mixxx_midi_0"
 um2_midi_1 = "um2_midi_1"
 um2_midi_2 = "um2_midi_2"
 
+tonex_midi = "tonex_midi"
+
 config(
 
     initial_scene = 1,
@@ -97,7 +100,7 @@ config(
         (sd90_port_b,  '.*SD-90 Part B.*'),
         (sd90_midi_1,  '.*SD-90 MIDI 1.*',),
         (sd90_midi_2,  '.*SD-90 MIDI 2.*',),
-        (behringer,    '.*UMC204HD 192k MIDI 1.*'),
+        (umc204hd,    '.*UMC204HD 192k MIDI 1.*'),
         (mpk249_port_a,   '.*MPK249 Port A.*',),
         (mpk249_port_b,   '.*MPK249 Port B.*',),
         (mpk249_midi,     '.*MPK249 MIDI.*',),
@@ -111,6 +114,7 @@ config(
         (mixxx_midi_0,'.*VirMIDI.*-0$',),
         (numark_midi_pmv3_0,'.*Party Mix III MIDI 1.*',),
         (numark_midi_pmv2_0,'.*Party Mix MKII MIDI 1.*',),
+        (tonex_midi,'.*ToneX MIDI 1.*',),
         (um2_midi_1,'.*UM-2 MIDI 1.*',),
         (um2_midi_2,'.*UM-2 MIDI 2.*',),
     ],
@@ -121,7 +125,7 @@ config(
         (sd90_port_b,  '.*SD-90 Part B.*'),
         (sd90_midi_1,  '.*SD-90 MIDI 1.*',),
         (sd90_midi_2,  '.*SD-90 MIDI 2.*',),
-        (behringer,    '.*UMC204HD 192k MIDI 1.*'),
+        (umc204hd,    '.*UMC204HD 192k MIDI 1.*'),
         (mpk249_port_a,   '.*MPK249 Port A.*',),
         (mpk249_port_b,   '.*MPK249 Port B.*',),
         (mpk249_midi,     '.*MPK249 MIDI.*',),
@@ -135,6 +139,7 @@ config(
         (mixxx_midi_0,'.*VirMIDI.*-0$',),
         (numark_midi_pmv3_0,'.*Party Mix III MIDI 1.*',),
         (numark_midi_pmv2_0,'.*Party Mix MKII MIDI 1.*',),
+        (tonex_midi,'.*ToneX MIDI 1.*',),
         (um2_midi_1,'.*UM-2 MIDI 1.*',),
     ],
 )
@@ -144,6 +149,7 @@ config(
 #
 
 hook(
+    AutoRestart(),
     OSCInterface(),
     MemorizeScene("/tmp/hook.memorize-scene")
 )
@@ -1491,6 +1497,13 @@ _scenes = {
             Scene("FCBNUM1",  init_patch=Discard(), patch=Port(mpk249_midi)),
         ],
     ),
+    190: SceneGroup("ToneX", [
+        Scene("Select ToneX patch", init_patch=Discard(), patch=Discard()),
+        Scene("00A", init_patch=Call(ToneX("00A")), patch=Discard()),
+        Scene("42B", init_patch=Call(ToneX("42B")), patch=Discard()),
+        Scene("42C", init_patch=Call(ToneX("42C")), patch=Discard()),
+        Scene("49C", init_patch=Call(ToneX("49C")), patch=Discard()),
+    ]),
 }
 
         
