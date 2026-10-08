@@ -181,6 +181,7 @@ _scenes = {
     95: Scene("GraceUnderPressure", init_patch=PLAYLIST_MANAGER, patch=Discard()),
     96: Scene("SteveMorse", init_patch=PLAYLIST_MANAGER, patch=Discard()),
     97: Scene("Colocs", init_patch=PLAYLIST_MANAGER, patch=Discard()),
+    98: Scene("Tanya", init_patch=PLAYLIST_MANAGER, patch=Discard()),
     100: SceneGroup(
         "Spotify",
         [
