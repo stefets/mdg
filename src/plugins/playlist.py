@@ -29,7 +29,9 @@ class Playlist:
         ".aac",
         ".mp4",
         ".mkv",
-        ".webm",
+        ".webm",    
+        ".jpg",
+        ".png",
     }
     
     def __init__(self):
