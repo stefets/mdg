@@ -151,3 +151,6 @@ class MpvClient:
         loop = self.get_property("loop-file")
         self.set_property("loop-file", "no" if loop == "inf" else "inf")
         
+    def stop(self):
+        self.command("stop")
+        

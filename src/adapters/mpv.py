@@ -38,7 +38,7 @@ class MpvAdapter:
         # Upper bound is exclusive
         self.note_range_mapping = RangeKeyDict(
             {
-                (0, 1): self.on_toggle_loop,
+                (0, 1): self.stop,
                 (1, 36): self.on_play,
                 (36, 41): self.navigate_scene,
                 (41, 48): self.navigate_player,
@@ -164,12 +164,13 @@ class MpvAdapter:
         self.current_entry = 0
 
     def next_subscene(self, ev):
-        self.on_switch_subscene(1)
+        self.on_switch_subscene(Direction.Forward)
 
     def prev_subscene(self, ev):
-        self.on_switch_subscene(-1)
+        self.on_switch_subscene(Direction.Backward)
 
-    def on_switch_subscene(self, offset):
+    def on_switch_subscene(self, direction):
+        offset = 1 if direction == Direction.Forward else -1
         switch_subscene(current_subscene() + offset)
         self.current_subscene = current_subscene()
         self.current_entry = 0
@@ -244,3 +245,6 @@ class MpvAdapter:
             # TODO: Replay the current entry
             pass
             # self.mpv.load_list(self.current_entry, self.playlist.filename)
+
+    def stop(self, ev):
+        self.mpv.stop()
