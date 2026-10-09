@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from mididings.engine import scenes, current_scene
+from typing import ClassVar
 
 class PlaylistManager:
     def __init__(self, terminal):
@@ -19,7 +20,7 @@ class PlaylistManager:
 
 
 class Playlist:
-    EXTENSIONS = {
+    extensions: ClassVar[set[str]] = {
         ".mp3",
         ".wav",
         ".flac",
@@ -33,7 +34,6 @@ class Playlist:
         ".jpg",
         ".png",
     }
-    
     def __init__(self):
         self.songs = []
 
@@ -41,7 +41,7 @@ class Playlist:
         self.songs = [
             p.resolve()
             for p in sorted(Path(path).glob("**/*"))
-            if p.is_file() and p.suffix.lower() in self.EXTENSIONS
+            if p.is_file() and p.suffix.lower() in self.extensions
         ]
   
     def len(self):
