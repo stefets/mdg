@@ -42,6 +42,7 @@ class MpvAdapter:
                 (1, 36): self.on_play,
                 (36, 41): self.navigate_scene,
                 (41, 48): self.navigate_player,
+                (49, 128): self.on_play,
                 # (self.controller.size - 1, self.controller.size): self.on_replay,
             }
         )
@@ -178,17 +179,27 @@ class MpvAdapter:
     def on_play(self, ev):
         self.load_current_entry(ev.data1)
 
-    def load_current_entry(self, index):
-        if index > len(self.playlist.songs):
-            print(
-                f"Index {index} is out of range for playlist with {len(self.playlist.songs)} entries"
-            )
+    def load_current_entry(self, key):
+        if 1 <= key <= 74:
+            playlist = self.playlist.songs
+        elif 75 <= key <= 99:
+            playlist = self.playlist.videos
+        elif 100 <= key <= 127:
+            playlist = self.playlist.images
+        else:
+            print(f"Invalid media key: {key}")
             return
 
-        self.current_entry = index
+        item = next((item for item in playlist if item.key == key), None)
 
-        self.mpv.unpause()  # Unpause before loading the file to ensure playback starts immediately
-        self.mpv.load(str(self.playlist.songs[self.current_entry - 1]))
+        if item is None:
+            print(f"No media found for key {key}")
+            return
+
+        self.current_entry = key
+
+        self.mpv.unpause()
+        self.mpv.load(str(item.path))
 
     def on_toggle_pause(self, ev):
         """Pause if playing, else resume if paused"""
@@ -213,7 +224,7 @@ class MpvAdapter:
          self.mpv.seek(self.jump_offset) if direction == Direction.Forward else self.mpv.seek(-self.jump_offset)
 
     def next_entry(self, ev):
-        if self.playlist.len() >= self.current_entry + 1:
+        if len(self.playlist.songs) > self.current_entry + 1:
             ev.data1 = self.current_entry + 1
             self.on_play(ev)
 
@@ -234,9 +245,25 @@ class MpvAdapter:
         self.terminal.refresh()
 
     def get_current_song(self):
+        key = self.current_entry
+        if 1 <= key <= 74:
+            playlist = self.playlist.songs
+        elif 75 <= key <= 99:
+            playlist = self.playlist.videos
+        elif 100 <= key <= 127:
+            playlist = self.playlist.images
+        else:
+            #print(f"Invalid media key: {key} - get_current_song()")
+            return
+
+        item = next((item for item in playlist if item.key == key), None)
+
+        if item is None:
+            print(f"No media found for key {key}")
+            return
         try:
             if self.current_entry > 0:
-                return f"{self.current_entry}-{self.playlist.songs[self.current_entry - 1].name}"
+                return f"{self.current_entry}-{item.name}"
         except IndexError:
             return "IndexError"
 

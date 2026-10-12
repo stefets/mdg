@@ -10,6 +10,7 @@ from rich.text import Text
 class TerminalUI:
 
     def __init__(self):
+        self.playlist = None
         self.adapters = []
         self.live = Live(
             self.render(),
@@ -32,7 +33,7 @@ class TerminalUI:
         adapter_table.add_column("Muted", justify="center")
         adapter_table.add_column("Loop", justify="center")
         adapter_table.add_column("Auto-next", justify="center")
-        adapter_table.add_column("Song")
+        adapter_table.add_column("Item")
 
         for adapter in self.adapters:
             volume = Columns(
@@ -59,15 +60,15 @@ class TerminalUI:
         # -------------------------
         playlist_table = Table(title="PLAYLIST")
 
-        playlist_table.add_column("#")
-        playlist_table.add_column("Song")
+        playlist_table.add_column("Key")
+        playlist_table.add_column("Items")
 
         if self.adapters:
-            songs = self.playlist.songs
+            items = self.playlist.songs + self.playlist.videos + self.playlist.images
 
-            for index, song in enumerate(songs, start=1):
+            for index, song in enumerate(items, start=1):
                 playlist_table.add_row(
-                    str(index),
+                    str(song.key),
                     song.name,
                 )
 
