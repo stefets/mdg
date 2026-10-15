@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 from mididings.engine import scenes, current_scene
+from typing import ClassVar
+
 
 class PlaylistManager:
     def __init__(self, terminal):
@@ -19,29 +21,55 @@ class PlaylistManager:
 
 
 class Playlist:
-    EXTENSIONS = {
-        ".mp3",
-        ".wav",
-        ".flac",
-        ".ogg",
-        ".opus",
-        ".m4a",
-        ".aac",
-        ".mp4",
-        ".mkv",
-        ".webm",
+    audio_extensions: ClassVar[set[str]] = {
+        ".mp3", ".wav", ".flac", ".ogg", ".opus", ".m4a", ".aac",
     }
-    
+    video_extensions: ClassVar[set[str]] = {".mp4", ".mkv", ".webm"}
+    image_extensions: ClassVar[set[str]] = {".jpg", ".png"}
+
+    audio_keys: ClassVar[range] = range(1, 75)
+    video_keys: ClassVar[range] = range(75, 100)
+    image_keys: ClassVar[range] = range(100, 128)
+
     def __init__(self):
         self.songs = []
+        self.videos = []
+        self.images = []
 
     def create(self, path):
-        self.songs = [
+        files = [
             p.resolve()
             for p in sorted(Path(path).glob("**/*"))
-            if p.is_file() and p.suffix.lower() in self.EXTENSIONS
+            if p.is_file()
         ]
-  
-    def len(self):
-        return len(self.songs)
 
+        self.songs = self._create_items(
+            files, self.audio_extensions, self.audio_keys
+        )
+        self.videos = self._create_items(
+            files, self.video_extensions, self.video_keys
+        )
+        self.images = self._create_items(
+            files, self.image_extensions, self.image_keys
+        )
+
+    @staticmethod
+    def _create_items(files, extensions, keys):
+        paths = [p for p in files if p.suffix.lower() in extensions]
+
+        if len(paths) > len(keys):
+            raise ValueError(
+                f"Too many media files: {len(paths)} found, "
+                f"maximum is {len(keys)}."
+            )
+
+        return [
+            PlaylistItem(path, key)
+            for path, key in zip(paths, keys)
+        ]
+
+class PlaylistItem:
+    def __init__(self, path, key):
+        self.key = key
+        self.path = path
+        self.name = Path(path).stem

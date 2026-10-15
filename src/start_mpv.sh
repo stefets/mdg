@@ -36,6 +36,7 @@ mpv --idle=yes --keep-open=no --no-video --no-terminal \
 
 # Video and audio on device: SD90 (Socket: /tmp/sd90-video.sock)
 mpv --idle=yes --keep-open=no --no-terminal \
+    --fullscreen \
     --input-ipc-server=/tmp/sd90-video.sock --audio-device=alsa/SD90 \
     --log-file=/tmp/mpv-sd90-video.log --msg-level=all=info  &
 
@@ -52,10 +53,13 @@ mpv --idle=yes --keep-open=no --no-video --no-terminal \
 
 # Video and audio on device: U192k (Socket: /tmp/u192k-video.sock)
 mpv --idle=yes --keep-open=no --no-terminal \
+    --fullscreen \
     --input-ipc-server=/tmp/u192k-video.sock --audio-device=alsa/U192k -alsa-ignore-chmap=yes \
     --log-file=/tmp/mpv-u192k-video.log --msg-level=all=info &
 
 # ---------------------------------- VIDEO ONLY ----------------------------------
 mpv --idle=yes --keep-open=no --no-terminal \
     --input-ipc-server=/tmp/video.sock \
+    --image-display-duration=inf \
+    --fullscreen \
     --ao=null &

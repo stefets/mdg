@@ -21,7 +21,7 @@ load_dotenv()
 # Port name alias
 midimix_midi = "midimix"
 
-behringer    = "behringer"
+umc204hd    = "umc204hd"
 
 sd90_port_a  = "sd90_port_a"
 sd90_port_b  = "sd90_port_b"
@@ -63,7 +63,7 @@ config(
         (sd90_port_b,  '.*SD-90 Part B.*'),
         (sd90_midi_1,  '.*SD-90 MIDI 1.*',),
         (sd90_midi_2,  '.*SD-90 MIDI 2.*',),
-        (behringer,    '.*UMC204HD 192k MIDI 1.*'),
+        (umc204hd,    '.*UMC204HD 192k MIDI 1.*'),
         (mpk249_port_a,   '.*MPK249 Port A.*',),
         (mpk249_port_b,   '.*MPK249 Port B.*',),
         (mpk249_midi,     '.*MPK249 MIDI.*',),
@@ -88,7 +88,7 @@ config(
         (sd90_port_b,  '.*SD-90 Part B.*'),
         (sd90_midi_1,  '.*SD-90 MIDI 1.*',),
         (sd90_midi_2,  '.*SD-90 MIDI 2.*',),
-        (behringer,    '.*UMC204HD 192k MIDI 1.*'),
+        (umc204hd,    '.*UMC204HD 192k MIDI 1.*'),
         (mpk249_port_a,   '.*MPK249 Port A.*',),
         (mpk249_port_b,   '.*MPK249 Port B.*',),
         (mpk249_midi,     '.*MPK249 MIDI.*',),
