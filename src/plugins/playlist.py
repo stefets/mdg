@@ -27,7 +27,7 @@ class Playlist:
     video_extensions: ClassVar[set[str]] = {".mp4", ".mkv", ".webm"}
     image_extensions: ClassVar[set[str]] = {".jpg", ".png"}
 
-    audio_keys: ClassVar[range] = range(1, 75)
+    audio_keys: ClassVar[range] = range(13, 75)
     video_keys: ClassVar[range] = range(75, 100)
     image_keys: ClassVar[range] = range(100, 128)
 

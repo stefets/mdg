@@ -29,11 +29,6 @@ class MpvAdapter:
         self.muted = False
         self.loop = False
         
-        # Offset for the note mapping, 
-        # as the first 12 notes are reserved for scene navigation
-        self.note_offset = 12  
-
-
         # Accepted range | Range array over the note_mapping array
         # Upper bound is exclusive
         self.note_range_mapping = RangeKeyDict(
@@ -180,7 +175,7 @@ class MpvAdapter:
         self.current_entry = 0
 
     def on_play(self, ev):
-        index = ev.data1 - self.note_offset
+        index = ev.data1 #- self.note_offset
         self.load_current_entry(index)
 
     def load_current_entry(self, key):
@@ -227,11 +222,11 @@ class MpvAdapter:
          self.mpv.seek(self.jump_offset) if direction == Direction.Forward else self.mpv.seek(-self.jump_offset)
 
     def next_entry(self, ev):
-        ev.data1 = self.current_entry + 1 + self.note_offset
+        ev.data1 = self.current_entry + 1
         self.on_play(ev)
 
     def prev_entry(self, ev):
-        ev.data1 = self.current_entry - 1 + self.note_offset
+        ev.data1 = self.current_entry - 1
         self.on_play(ev)
 
     def set_volume(self, ev):
