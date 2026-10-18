@@ -105,10 +105,10 @@ _scenes = {
                 init_patch=Call(GT1KPreset("U47-1")),
                 patch=Discard(),
             ),
-            Scene("InBigCountry", init_patch=i_big_country, patch=p_big_country),
-            Scene("HighlandScenery", init_patch=Discard(), patch=p_highland_scenery),
+            Scene("In Big Country", init_patch=Call(GT1KPreset("U08-5")), patch=Discard()),
+            Scene("Highland Scenery", init_patch=Discard(), patch=p_highland_scenery),
             Scene("Inwards", init_patch=Call(GT1KPreset("U08-5")), patch=Port(mpk249_midi)),
-            Scene("AnglePark", init_patch=Discard(), patch=p_pk5ctrl_generic >> p_base),
+            Scene("Angle Park", init_patch=Discard(), patch=p_pk5ctrl_generic >> p_base),
             Scene("Wonderland", init_patch=Call(GT1KPreset("U09-5")), patch=Discard()),
             Scene(
                 "Harvest Home", init_patch=Call(GT1KPreset("U09-4")), patch=Discard()
