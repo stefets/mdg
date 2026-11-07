@@ -1,3 +1,4 @@
+from typing import ClassVar
 import mididings.constants as _constants
 from mididings.engine import (
     current_scene,
@@ -12,7 +13,12 @@ from plugins.transport import Direction
 from plugins.mpv import MpvClient
 
 
+#
+# This class is an adapter for the mpv player, 
+# allowing control of playback and navigation through a playlist using MIDI events.
+#
 class MpvAdapter:
+    default_volume: ClassVar[int] = 50
     def __init__(self, address: str, playlist, terminal):
         if address is None:
             raise ValueError("IPC socket path must be provided")
@@ -24,7 +30,7 @@ class MpvAdapter:
         self.jump_offset = 10
         self.autonext = False
         self.current_entry = 0
-        self.volume = 0
+        self.volume = self.default_volume
         self.paused = False
         self.muted = False
         self.loop = False
@@ -67,7 +73,7 @@ class MpvAdapter:
         
         # The MPV client instance
         self.mpv = MpvClient(address, self.mpv_event_callback)
-        self.mpv.volume(75.0)
+        self.mpv.volume(self.default_volume)
         
 
     # call from mididings
