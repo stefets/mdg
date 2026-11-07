@@ -326,4 +326,5 @@ _scenes = {
         Scene("42C", init_patch=Call(ToneX("42C")), patch=Discard()),
         Scene("49C", init_patch=Call(ToneX("49C")), patch=Discard()),
     ]),
+    200: Scene("Videos", init_patch=PLAYLIST_MANAGER, patch=Discard()),
 }
