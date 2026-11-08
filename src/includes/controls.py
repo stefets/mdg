@@ -50,7 +50,13 @@ mpk_249_261_controller = ChannelSplit(
         6: mpv_controller_u192k_b,
         7: mpv_controller_u192k_video,
         14: sd90_controller,
-    }
+    })
+
+# ref: docs/fcb1010-mapping.md
+fcb1010_controller = (ChannelFilter(9) >> 
+    CtrlFilter(81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92) >> 
+    # Output to MPK261 MIDI DIN OUT Port
+    Ctrl(mpk261_midi, EVENT_CHANNEL, EVENT_CTRL, EVENT_VALUE)
 )
 
 # Midi input control patch
@@ -87,13 +93,31 @@ control_patch = PortSplit(
                 2: p_hue,
             }
         ),
-        # DIN Port
+
+        # -
+        # Inputs from DIN Ports
+        #
+        # MPK261 INPUT DIN Port
         mpk261_midi: ChannelSplit(
             {
                 # Roland PK5 connected to the MIDI IN of the MPK249
-                4: Transpose(-24) >> mpv_controller_sd90_b,
+                4: [(Transpose(-24) >> mpv_controller_sd90_b)],
             }
         ),
+        # WIP
+        sd90_midi_1: [Print("SD-90 MIDI 1 INPUT DIN Port")], 
+        # SD-90 MIDI 2 INPUT DIN Port
+        sd90_midi_2: ChannelSplit(
+            {
+                # Mapping of the FCB1010 connected to the SD-90 MIDI 2 INPUT DIN Port
+               9: [fcb1010_controller],
+            }
+        ),
+        # --
+
+        #
+        # Port forwargind
+        #
         # Direct routing of the Numark controllers to the virtual port used by Mixxx
         # This allow me to use other controllers in addition of the Numark controller to control Mixxx
         # https://www.numark.com/new/party-mix-3/
